@@ -417,15 +417,15 @@
         </figure>
         <div class="comments">
           <h3>給這張照片留言</h3>
-          <p class="quiet" id="local-note">留言和紙蓮花會留在這個瀏覽器。</p>
-          <p class="quiet" id="empty">看看這張照片，留下一段你想記得的事。</p>
+          <p class="quiet" id="local-note">留言會送交家屬審核，通過後會顯示在這張照片下方。</p>
+          <p class="quiet" id="empty">正在讀取留言…</p>
           <ul id="comments"></ul>
           <form id="message-form">
             <label for="name">暱稱（選填）</label>
             <input id="name" maxlength="24" autocomplete="off">
             <label for="message">想說的話</label>
             <textarea id="message" required maxlength="140"></textarea>
-            <button class="action" type="submit">留下留言</button>
+            <button class="action" id="send-comment" type="submit">留下留言</button>
             <span class="quiet" id="message-status" role="status"></span>
           </form>
         </div>
@@ -435,7 +435,8 @@
     <section class="blessing" id="blessing" aria-labelledby="blessing-title">
       <div>
         <h2 id="blessing-title">為媽媽送一朵紙蓮花</h2>
-        <p id="lotus-count" role="status">已送上 0 朵紙蓮花</p>
+        <p id="lotus-count" role="status">正在讀取紙蓮花總數…</p>
+        <p id="lotus-status" role="status"></p>
       </div>
       <div class="lotus-control">
         <button class="action" data-primary type="button" id="lotus"><span aria-hidden="true">🪷</span>&nbsp; 送一朵紙蓮花</button>
@@ -701,14 +702,25 @@
 
   if (!state.soundOff) startSoundtrack();
 
-  function showComments() {
-    const comments = state.comments[slides[photoIndex].id] ?? [];
+  const guestbookUrl = 'https://chen-memorial-guestbook.mr-slowcore.chatgpt.site';
+  async function guestbookRequest(path, payload) {
+    const options = payload ? {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload),
+    } : {};
+    const result = await fetch(`${guestbookUrl}${path}`, { ...options, signal: AbortSignal.timeout(10000) });
+    if (!result.ok) throw new Error(`Guestbook request failed with ${result.status}`);
+    return result.json();
+  }
+
+  function renderComments(comments, message) {
     commentList.replaceChildren();
-    byId('empty').hidden = comments.length > 0;
+    const empty = byId('empty');
+    empty.textContent = message;
+    empty.hidden = !message;
     for (const comment of comments) {
       const item = document.createElement('li');
       const name = document.createElement('strong');
-      name.textContent = comment.name;
+      name.textContent = comment.local ? `${comment.name}（此瀏覽器的舊留言）` : comment.name;
       const textarea = document.createElement('p');
       textarea.textContent = comment.text;
       const time = document.createElement('time');
@@ -718,6 +730,20 @@
       }).format(new Date(comment.createdAt));
       item.append(name, textarea, time);
       commentList.append(item);
+    }
+  }
+  let commentRequest = 0;
+  async function showComments() {
+    const photo = slides[photoIndex].id;
+    const request = ++commentRequest;
+    const local = (state.comments[photo] ?? []).map(comment => ({ ...comment, local: true }));
+    renderComments(local, '正在讀取公開留言…');
+    try {
+      const { comments } = await guestbookRequest(`/api/comments?photo=${encodeURIComponent(photo)}`);
+      if (request !== commentRequest) return;
+      renderComments([...comments, ...local], comments.length || local.length ? '' : '看看這張照片，留下一段你想記得的事。');
+    } catch {
+      if (request === commentRequest) renderComments(local, '暫時無法讀取公開留言。');
     }
   }
   async function showPhoto(index) {
@@ -811,36 +837,71 @@
     soundtrack.pause();
   });
   form.addEventListener('focusin', stopPlayback);
-  form.addEventListener('submit', event => {
+  const sendComment = byId('send-comment');
+  let pendingComment;
+  form.addEventListener('submit', async event => {
     event.preventDefault();
+    if (sendComment.disabled) return;
     const message = input.value.trim();
     if (!message) {
       messageStatus.textContent = '請先寫下想說的話。';
       input.focus();
       return;
     }
-    const comments = state.comments[slides[photoIndex].id] ??= [];
-    comments.push({ name: byId('name').value.trim() || '親友', text: message, createdAt: new Date().toISOString() });
-    storage();
-    form.reset();
-    showComments();
-    messageStatus.textContent = '已留下留言。';
+    const photo = slides[photoIndex].id;
+    const name = byId('name').value.trim();
+    if (pendingComment?.photo !== photo || pendingComment?.name !== name || pendingComment?.message !== message) {
+      pendingComment = { id: crypto.randomUUID(), photo, name, message };
+    }
+    sendComment.disabled = true;
+    messageStatus.textContent = '正在送出留言…';
+    try {
+      await guestbookRequest('/api/comments', pendingComment);
+      pendingComment = undefined;
+      if (drafts.get(photo)?.trim() === message) drafts.delete(photo);
+      if (slides[photoIndex].id === photo && input.value.trim() === message) input.value = '';
+      messageStatus.textContent = '已送出留言，等待家屬審核。';
+    } catch {
+      messageStatus.textContent = '暫時無法確認是否送達，請再送出一次。';
+    } finally {
+      sendComment.disabled = false;
+    }
   });
   showComments();
 
   const lotus = byId('lotus');
   const count = byId('lotus-count');
-  function showLotus() {
-    if (!state.lotus) return;
-    lotus.setAttribute('aria-disabled', 'true');
-    lotus.textContent = '已送出紙蓮花';
-    count.textContent = '已送上 1 朵紙蓮花。謝謝你的祝福。';
+  const lotusStatus = byId('lotus-status');
+  let lotusTotal;
+  let pendingLotus;
+  function showLotus(total) {
+    lotusTotal = Math.max(lotusTotal ?? 0, total);
+    count.textContent = `已送上 ${new Intl.NumberFormat('zh-TW').format(lotusTotal)} 朵紙蓮花`;
   }
-  lotus.addEventListener('click', () => {
-    if (state.lotus) return;
-    state.lotus = true;
-    storage();
-    showLotus();
+  async function refreshLotus() {
+    try {
+      const { count: total } = await guestbookRequest('/api/lotus');
+      showLotus(total);
+    } catch {
+      if (lotusTotal === undefined) count.textContent = '暫時無法讀取紙蓮花總數。';
+    }
+  }
+  lotus.addEventListener('click', async () => {
+    if (lotus.disabled) return;
+    pendingLotus ??= { id: crypto.randomUUID() };
+    lotus.disabled = true;
+    lotusStatus.textContent = '';
+    try {
+      const { count: total } = await guestbookRequest('/api/lotus', pendingLotus);
+      pendingLotus = undefined;
+      showLotus(total);
+      lotusStatus.textContent = '謝謝你的祝福。';
+    } catch {
+      lotusStatus.textContent = '暫時無法確認是否送達，請再試一次。';
+      return;
+    } finally {
+      lotus.disabled = false;
+    }
     if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     const blossom = document.createElement('span');
     blossom.className = 'lotus-pop';
@@ -849,7 +910,13 @@
     blossom.addEventListener('animationend', () => blossom.remove(), { once: true });
     lotus.after(blossom);
   });
-  showLotus();
+  refreshLotus();
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+      refreshLotus();
+      showComments();
+    }
+  });
 </script>
 </body>
 </html>

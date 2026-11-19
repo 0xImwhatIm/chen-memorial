@@ -11,21 +11,12 @@
 
 ## 留言與紙蓮花
 
-目前照片留言、送出紙蓮花的狀態及顯示偏好，儲存在訪客瀏覽器的 `localStorage`。同一瀏覽器切換故事版和追思版時可讀取同一份資料。換裝置、換瀏覽器或清除網站資料後，原來的紀錄便無法從網站讀取。
+- **照片留言**會送到共用資料庫，家屬審核通過後才會顯示在對應照片下方。
+- **紙蓮花**可重複贈送。每次成功送出會增加全站總數。網路逾時後重試同一筆送出時只計一次。
+- [留言管理](https://chen-memorial-guestbook.mr-slowcore.chatgpt.site/admin) 需以有管理權限的 ChatGPT 帳號登入，可查看待審核、已公開或已隱藏的留言。
+- 舊版留下的留言仍可在原瀏覽器查看。舊版紙蓮花紀錄分散於各瀏覽器，全站計數自啟用共享功能起累加。
 
-紙蓮花目前是該瀏覽器的 0 或 1 朵紀錄。網站目前沒有可供家屬查閱所有留言的後台，也沒有跨裝置的紙蓮花總數。
-
-### 跨裝置儲存方案
-
-可沿用 GitHub Pages 提供頁面，另以 Supabase Postgres 和 Edge Functions 接收留言及紙蓮花。此方案尚未啟用。
-
-| 功能 | 建議流程 |
-| --- | --- |
-| 照片留言 | 以照片 ID、暱稱、內容和時間存入資料庫。家屬登入後可查看留言，並決定哪些留言公開。 |
-| 紙蓮花 | 後端記錄每次成功送出並回傳網站總數。同一瀏覽器用識別碼避免重複送出，後端限制送出頻率。若要做到每人限送一次，需加上身分驗證。 |
-| 現有紀錄 | 舊資料分散在各訪客的瀏覽器。若要保留，需要讓仍有原紀錄的訪客自行選擇上傳。 |
-
-家屬帳號和留言審核由後端驗證，公開頁面只讀取已通過的留言及紙蓮花總數。資料庫管理金鑰應放在後端。
+網站由 GitHub Pages 發布，留言服務運行於 Sites，資料儲存在 D1。公開端點只提供已核准的留言及紙蓮花總數。留言審核與管理權限由伺服器驗證。
 
 ## 維護與部署
 
@@ -39,4 +30,5 @@
 
 - 版型參考 [HTML5 UP Story](https://html5up.net/story)
 - 配樂 [Reverie — Scott Buckley](https://www.scottbuckley.com.au/library/reverie/)，以 [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) 授權，網頁使用重新編碼的 MP3。
-- 技術文件 [GitHub Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages) · [Supabase Edge Functions](https://supabase.com/docs/guides/functions)
+- 技術文件 [GitHub Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages)
+
