@@ -421,6 +421,7 @@
     .blessing { grid-template-columns: minmax(0, 1fr); }
   }
 </style>
+  <script src="memorial-calendar.js"></script>
 </head>
 <body>
 <header class="chooser">
@@ -451,6 +452,7 @@
         <div class="actions">
           <a class="action" id="obituary" data-primary href="https://lyls.pse.im/9vqc9f" target="_blank" rel="noopener noreferrer">龍巖電子訃聞</a>
           <a class="action" id="hero-link" href="#dates">查看時間與地點</a>
+          <a class="action" id="birthday-link" href="birthday.html" hidden>媽媽的生日小音樂會</a>
         </div>
       </div>
       <a class="cover" href="#photos" aria-label="前往媽媽的照片">
@@ -635,10 +637,22 @@
       page.append(dates, photos, blessing);
     }
     for (const button of styleButtons) button.setAttribute('aria-pressed', button.dataset.style === style);
+    updateBirthdayLink(memorialCalendar.today().birthdaySeason);
     storage();
   }
   for (const button of styleButtons) button.addEventListener('click', () => setVariant(button.dataset.style));
-  const entryView = new URLSearchParams(window.location.search).get('view');
+  const pageQuery = new URLSearchParams(window.location.search);
+  const stayOnStory = pageQuery.get('birthday') === 'off';
+  const entryView = pageQuery.get('view');
+  let openingBirthday = false;
+  function updateBirthdayLink(birthdaySeason) {
+    const celebrate = birthdaySeason && site.dataset.variant === 'story';
+    byId('birthday-link').hidden = !celebrate;
+    if (celebrate && !stayOnStory && !window.location.hash && !openingBirthday) {
+      openingBirthday = true;
+      window.location.replace('birthday.html');
+    }
+  }
   const savedView = Object.hasOwn(variants, state.style) ? state.style : 'story';
   setVariant(entryView === 'story' || entryView === 'editorial' ? entryView : savedView);
 
@@ -1079,17 +1093,11 @@
   }));
   const daysFree = byId('days-free');
   const slidesById = new Map(slides.map(slide => [slide.id, slide]));
-  const millisecondsPerDay = 86400000;
-  const taipeiOffset = 8 * 60 * 60 * 1000;
-  // Fixed memorial date shared with the birthday page. It stays the same across releases.
-  const memorialDay = Date.UTC(2026, 10, 15) / millisecondsPerDay;
-  const firstStoryDay = Date.UTC(2026, 10, 21) / millisecondsPerDay;
+  const firstStoryDay = Date.UTC(2026, 10, 21) / memorialCalendar.dayMs;
   let displayedDay;
-  let nextDayTimer;
 
-  function refreshDailyStories() {
-    const now = Date.now();
-    const taipeiDay = Math.floor((now + taipeiOffset) / millisecondsPerDay);
+  function refreshDailyStories({dayNumber: taipeiDay, daysFree: elapsedDays, birthdaySeason}) {
+    updateBirthdayLink(birthdaySeason);
     if (taipeiDay !== displayedDay) {
       const daysSinceFirstStory = Math.max(0, taipeiDay - firstStoryDay);
       const firstIndex = daysSinceFirstStory * storyCards.length;
@@ -1103,19 +1111,12 @@
         card.description.textContent = description;
         card.link.dataset.slide = id;
       }
-      daysFree.textContent = String(Math.max(0, taipeiDay - memorialDay));
+      daysFree.textContent = String(elapsedDays);
       daysFree.closest('.memorial-counter').hidden = false;
       displayedDay = taipeiDay;
     }
-    clearTimeout(nextDayTimer);
-    const nextTaipeiMidnight = (taipeiDay + 1) * millisecondsPerDay - taipeiOffset;
-    nextDayTimer = setTimeout(refreshDailyStories, nextTaipeiMidnight - Date.now());
   }
-  refreshDailyStories();
-  window.addEventListener('pageshow', refreshDailyStories);
-  document.addEventListener('visibilitychange', () => {
-    if (!document.hidden) refreshDailyStories();
-  });
+  memorialCalendar.watch(refreshDailyStories);
 
   for (const link of document.querySelectorAll('.chapter-link')) {
     link.addEventListener('click', () => {
