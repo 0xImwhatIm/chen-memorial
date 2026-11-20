@@ -298,7 +298,7 @@
   }
   [data-variant="story"] .hero-lead { margin: .65rem auto 0; }
   [data-variant="story"] .hero .actions { margin-top: .9rem; justify-content: center; }
-  [data-variant="story"] .story-chapters { display: grid; gap: clamp(.9rem, 2.6vw, 1.75rem); }
+  [data-variant="story"] .story-chapters { display: grid; gap: clamp(2rem, 6vw, 4.5rem); }
   .memorial-counter {
     grid-column: 1 / -1;
     margin-block-end: clamp(.4rem, 2vw, 1.1rem);
@@ -309,19 +309,15 @@
   }
   .memorial-counter strong { color: var(--accent); font-size: 1.35em; font-variant-numeric: tabular-nums; }
   .memorial-counter-note { color: var(--muted); font: .84rem/1.5 var(--sans); }
-  .daily-story-heading { display: flex; align-items: baseline; flex-wrap: wrap; gap: .35rem 1rem; }
-  .daily-story-heading h2 { font: 700 clamp(1.4rem, 1.2rem + .65vw, 1.8rem)/1.25 var(--serif); }
-  .daily-story-heading time { font-size: .9rem; color: var(--muted); }
   .chapter {
     display: grid;
     grid-template-columns: minmax(0,1.3fr) minmax(0,1fr);
     align-items: center;
     gap: clamp(1rem, 5vw, 4.5rem);
   }
-  [data-variant="story"] .original-stories { gap: clamp(2rem, 6vw, 4.5rem); }
   @media (min-width: 42.01rem) {
-    .original-stories .chapter:nth-child(2) { grid-template-columns: minmax(0,1fr) minmax(0,1.3fr); }
-    .original-stories .chapter:nth-child(2) > img { order: 2; }
+    #story-chapters .chapter:nth-child(2) { grid-template-columns: minmax(0,1fr) minmax(0,1.3fr); }
+    #story-chapters .chapter:nth-child(2) > img { order: 2; }
   }
   .chapter > img {
     width: auto;
@@ -332,7 +328,7 @@
   }
   .chapter > div { max-width: 27em; }
   .chapter-year { font-size: .9rem; color: var(--accent); letter-spacing: .1em; }
-  .chapter :is(h2, h3) { margin: .25rem 0 .6rem; font: 500 clamp(1.65rem,3vw,2.6rem)/1.35 var(--serif); }
+  .chapter h2 { margin: .25rem 0 .6rem; font: 500 clamp(1.65rem,3vw,2.6rem)/1.35 var(--serif); }
   .chapter-link { display: inline-flex; align-items: center; min-height: 44px; margin-top: .35rem; color: var(--accent); }
   @media (max-width: 42rem) {
     .chapter { grid-template-columns: minmax(0,1fr); gap: .7rem; }
@@ -459,32 +455,29 @@
       </a>
     </header>
 
-    <section class="story-chapters original-stories" aria-label="媽媽的故事">
-      <article class="chapter"><img src="assets/album/1977-2.webp" alt="1977 年，媽媽靠在窗邊的椅子上。" loading="lazy">
-        <div><p class="chapter-year">1977</p><h2>窗邊的媽媽</h2><p>這是媽媽婚後的生活照。她靠著椅背，光從身後的窗戶照進來。</p><a class="chapter-link" data-slide="1977-2" href="#photos">翻看這一年的照片 →</a></div>
+    <section class="story-chapters" id="story-chapters" aria-label="媽媽的故事">
+      <article class="chapter">
+        <img src="assets/album/1977-2.webp" alt="1977 年，媽媽靠在窗邊的椅子上。" loading="lazy">
+        <div>
+          <p class="chapter-year">1977</p>
+          <h2>窗邊的媽媽</h2>
+          <p class="chapter-description">這是媽媽婚後的生活照。她靠著椅背，光從身後的窗戶照進來。</p>
+          <a class="chapter-link" data-slide="1977-2" href="#photos">到相簿看這張照片</a>
+        </div>
       </article>
-      <article class="chapter"><img src="assets/album/grad-3.webp" alt="大學畢業典禮當天，媽媽與家人在花旁合影。" loading="lazy">
-        <div><p class="chapter-year">大學畢業典禮</p><h2>畢業那一天</h2><p>我大學畢業那天，我們和媽媽一起拍了照。那天的合照也收在相簿裡。</p><a class="chapter-link" data-slide="grad-1" href="#photos">看畢業典禮的合照 →</a></div>
+      <article class="chapter">
+        <img src="assets/album/grad-3.webp" alt="大學畢業典禮當天，媽媽與家人在花旁合影。" loading="lazy">
+        <div>
+          <p class="chapter-year">大學畢業典禮</p>
+          <h2>畢業的那一天</h2>
+          <p class="chapter-description">我大學畢業那天，我們和媽媽一起拍了照。那天的合照也收在相簿裡。</p>
+          <a class="chapter-link" data-slide="grad-3" href="#photos">到相簿看這張照片</a>
+        </div>
       </article>
-    </section>
-    <section class="story-chapters" id="daily-memory" aria-labelledby="daily-memory-title">
       <div class="memorial-counter" hidden>
         <p>媽媽無病無痛，自在地過了 <strong id="days-free"></strong> 天</p>
         <p class="memorial-counter-note">從 2026 年 11 月 15 日算起</p>
       </div>
-      <div class="daily-story-heading">
-        <h2 id="daily-memory-title">今日的回憶</h2>
-        <time id="daily-date" hidden></time>
-      </div>
-      <article class="chapter">
-        <img id="daily-photo" src="assets/album/1977-2.webp" alt="1977 年，媽媽靠在窗邊的椅子上。" loading="lazy">
-        <div>
-          <p class="chapter-year" id="daily-year">1977 年</p>
-          <h3 id="daily-title">窗邊的媽媽</h3>
-          <p id="daily-description">這是媽媽婚後的生活照。她靠著椅背，光從身後的窗戶照進來。</p>
-          <a class="chapter-link" id="daily-album-link" data-slide="1977-2" href="#photos">到相簿看這張照片</a>
-        </div>
-      </article>
     </section>
     <section class="dates" id="dates" aria-labelledby="dates-title">
       <div class="section-title">
@@ -932,10 +925,10 @@
   });
   const dailyStories = [
     ["1977-2", "窗邊的媽媽", "這是媽媽婚後的生活照。她靠著椅背，光從身後的窗戶照進來。"],
+    ["grad-3", "畢業的那一天", "我大學畢業那天，我們和媽媽一起拍了照。那天的合照也收在相簿裡。"],
     ["1978-1f94890846b8-1", "大樹底下", "枝葉在兩人頭頂撐開。這張照片留下了媽媽和大兒子一起坐在樹下的片刻。"],
     ["1982-cc90dfb344c2-1", "望向海的那一邊", "媽媽坐在岸邊，身後是海浪與礁石。鏡頭留下她望向遠處的側臉。"],
     ["1994-68cbecbe39ef-1", "花叢旁的回眸", "淺色的小花佔了大半張照片。媽媽站在花叢旁，穿著紅色上衣，回頭望向鏡頭。"],
-    ["grad-3", "畢業那一天", "我大學畢業那天，我們和媽媽一起拍了照。照片裡，媽媽和家人站在花旁，留下了那天的笑容。"],
     ["1976-1", "禮服裡的年輕模樣", "兩人穿著正式的衣服並肩站立，身後是帶花紋的布幔。相簿從這裡留住了媽媽年輕時的模樣。"],
     ["1988-dff7efcad862-1", "大新街的家族合照", "一家人在大新街排開，有人站著，有人在前排稍稍蹲低。這張照片把大大小小的身影留在了一起。"],
     ["1993-87562d34659e-1", "旅途中的一座橋", "遠處的尖塔和近處的白欄杆框住了街景。媽媽站在橋上，留下旅途中一張帶著陽光的照片。"],
@@ -1008,51 +1001,50 @@
     ["1982-cc90dfb344c2-5", "門柱旁的一家人", "媽媽與孩子們站在門柱旁，柱上的紅字仍清楚可見。一張小小的合照，也留下當時經過的門口。"],
   ];
 
-  const dailyMemory = byId('daily-memory');
-  const dailyPhoto = byId('daily-photo');
-  const dailyLink = byId('daily-album-link');
-  const dailyDate = byId('daily-date');
+  const storyCards = Array.from(byId('story-chapters').querySelectorAll('.chapter'), card => ({
+    image: card.querySelector('img'),
+    year: card.querySelector('.chapter-year'),
+    title: card.querySelector('h2'),
+    description: card.querySelector('.chapter-description'),
+    link: card.querySelector('.chapter-link'),
+  }));
   const daysFree = byId('days-free');
   const slidesById = new Map(slides.map(slide => [slide.id, slide]));
   const millisecondsPerDay = 86400000;
   const taipeiOffset = 8 * 60 * 60 * 1000;
   const memorialDay = Date.UTC(2026, 10, 15) / millisecondsPerDay;
   const firstStoryDay = Date.UTC(2026, 10, 21) / millisecondsPerDay;
-  const formatStoryDate = new Intl.DateTimeFormat('zh-TW', {
-    month: 'long', day: 'numeric', timeZone: 'UTC',
-  });
   let displayedDay;
   let nextDayTimer;
 
-  function refreshDailyMemory() {
+  function refreshDailyStories() {
     const now = Date.now();
     const taipeiDay = Math.floor((now + taipeiOffset) / millisecondsPerDay);
     if (taipeiDay !== displayedDay) {
-      const storyIndex = Math.max(0, taipeiDay - firstStoryDay) % dailyStories.length;
-      const [id, title, description] = dailyStories[storyIndex];
-      const slide = slidesById.get(id);
-      const date = new Date(taipeiDay * millisecondsPerDay);
-      dailyDate.dateTime = date.toISOString().slice(0, 10);
-      dailyDate.textContent = formatStoryDate.format(date);
-      byId('daily-year').textContent = slide.group;
-      byId('daily-title').textContent = title;
-      byId('daily-description').textContent = description;
-      if (dailyPhoto.getAttribute('src') !== slide.src) dailyPhoto.src = slide.src;
-      dailyPhoto.alt = slide.label;
-      dailyLink.dataset.slide = id;
+      const daysSinceFirstStory = Math.max(0, taipeiDay - firstStoryDay);
+      const firstIndex = daysSinceFirstStory * storyCards.length;
+      for (const [offset, card] of storyCards.entries()) {
+        const [id, title, description] = dailyStories[(firstIndex + offset) % dailyStories.length];
+        const slide = slidesById.get(id);
+        if (card.image.getAttribute('src') !== slide.src) card.image.src = slide.src;
+        card.image.alt = slide.label;
+        card.year.textContent = slide.group;
+        card.title.textContent = title;
+        card.description.textContent = description;
+        card.link.dataset.slide = id;
+      }
       daysFree.textContent = String(Math.max(0, taipeiDay - memorialDay));
-      dailyDate.hidden = false;
-      dailyMemory.querySelector('.memorial-counter').hidden = false;
+      daysFree.closest('.memorial-counter').hidden = false;
       displayedDay = taipeiDay;
     }
     clearTimeout(nextDayTimer);
     const nextTaipeiMidnight = (taipeiDay + 1) * millisecondsPerDay - taipeiOffset;
-    nextDayTimer = setTimeout(refreshDailyMemory, nextTaipeiMidnight - Date.now());
+    nextDayTimer = setTimeout(refreshDailyStories, nextTaipeiMidnight - Date.now());
   }
-  refreshDailyMemory();
-  window.addEventListener('pageshow', refreshDailyMemory);
+  refreshDailyStories();
+  window.addEventListener('pageshow', refreshDailyStories);
   document.addEventListener('visibilitychange', () => {
-    if (!document.hidden) refreshDailyMemory();
+    if (!document.hidden) refreshDailyStories();
   });
 
   for (const link of document.querySelectorAll('.chapter-link')) {
