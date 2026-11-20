@@ -392,6 +392,9 @@
     scrollbar-gutter: stable;
   }
   .comment-results ul { margin-top: .35rem; }
+  .comment-controls { align-items: center; gap: .35rem; margin-top: .35rem; }
+  .comment-controls .action { padding-inline: .55rem; font-size: .85rem; }
+  #comment-position { font-variant-numeric: tabular-nums; white-space: nowrap; }
   .photo-caption {
     min-block-size: calc(4.35em + 1.04rem);
     line-height: 1.45;
@@ -520,6 +523,12 @@
           <div class="comment-results" tabindex="0" role="region" aria-label="這張照片的留言">
             <p class="quiet" id="empty">正在讀取留言…</p>
             <ul id="comments"></ul>
+          </div>
+          <div class="actions comment-controls" id="comment-controls" role="group" aria-label="留言輪播" hidden>
+            <button class="action" type="button" id="comment-previous" aria-controls="comments">上一則</button>
+            <button class="action" type="button" id="comment-play" aria-controls="comments">暫停輪播</button>
+            <button class="action" type="button" id="comment-next" aria-controls="comments">下一則</button>
+            <span class="quiet" id="comment-position"></span>
           </div>
         </div>
       </div>
@@ -825,6 +834,64 @@
     return result.json();
   }
 
+  const commentRegion = commentList.closest('.comment-results');
+  const commentControls = byId('comment-controls');
+  const commentPosition = byId('comment-position');
+  const commentPlay = byId('comment-play');
+  const commentMotion = matchMedia('(prefers-reduced-motion: reduce)');
+  let playComments = !commentMotion.matches;
+  let readingComments = false;
+  let commentTimer;
+  let commentIndex = 0;
+
+  function scheduleComments() {
+    clearTimeout(commentTimer);
+    commentPlay.textContent = playComments ? '暫停輪播' : '播放輪播';
+    if (commentList.children.length > 1 && playComments && !readingComments && !document.hidden) {
+      commentTimer = setTimeout(() => stepComment(1), 10000);
+    }
+  }
+
+  function showComment() {
+    for (const [index, item] of Array.from(commentList.children).entries()) {
+      item.hidden = index !== commentIndex;
+    }
+    commentRegion.scrollTop = 0;
+    const total = commentList.children.length;
+    commentControls.hidden = total <= 1;
+    commentPosition.textContent = total > 1 ? `${commentIndex + 1} / ${total}` : '';
+    scheduleComments();
+  }
+
+  function stepComment(direction) {
+    const total = commentList.children.length;
+    if (total <= 1) return;
+    commentIndex = (commentIndex + direction + total) % total;
+    showComment();
+  }
+
+  for (const [id, direction] of [['comment-previous', -1], ['comment-next', 1]]) {
+    byId(id).addEventListener('click', () => stepComment(direction));
+  }
+  commentPlay.addEventListener('click', () => {
+    playComments = !playComments;
+    scheduleComments();
+  });
+  commentRegion.addEventListener('pointerenter', event => {
+    if (event.pointerType !== 'mouse') return;
+    readingComments = true;
+    scheduleComments();
+  });
+  commentRegion.addEventListener('pointerleave', () => {
+    readingComments = false;
+    scheduleComments();
+  });
+  document.addEventListener('visibilitychange', scheduleComments);
+  commentMotion.addEventListener('change', event => {
+    if (event.matches) playComments = false;
+    scheduleComments();
+  });
+
   function renderComments(comments, message) {
     commentList.replaceChildren();
     const empty = byId('empty');
@@ -844,6 +911,8 @@
       item.append(name, textarea, time);
       commentList.append(item);
     }
+    commentIndex = 0;
+    showComment();
   }
   let commentRequest = 0;
   async function showComments() {
@@ -1012,6 +1081,7 @@
   const slidesById = new Map(slides.map(slide => [slide.id, slide]));
   const millisecondsPerDay = 86400000;
   const taipeiOffset = 8 * 60 * 60 * 1000;
+  // Fixed memorial date shared with the birthday page. It stays the same across releases.
   const memorialDay = Date.UTC(2026, 10, 15) / millisecondsPerDay;
   const firstStoryDay = Date.UTC(2026, 10, 21) / millisecondsPerDay;
   let displayedDay;
@@ -1115,6 +1185,7 @@
     lotusTotal = Math.max(lotusTotal ?? 0, total);
     count.textContent = `已送上 ${new Intl.NumberFormat('zh-TW').format(lotusTotal)} 朵紙蓮花`;
   }
+  // The shared total belongs to the existing guestbook database across deployments.
   async function refreshLotus() {
     try {
       const { count: total } = await guestbookRequest('/api/lotus');
