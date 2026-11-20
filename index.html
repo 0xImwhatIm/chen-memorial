@@ -298,15 +298,26 @@
   }
   [data-variant="story"] .hero-lead { margin: .65rem auto 0; }
   [data-variant="story"] .hero .actions { margin-top: .9rem; justify-content: center; }
-  [data-variant="story"] .story-chapters { display: grid; gap: clamp(2rem, 6vw, 4.5rem); }
+  [data-variant="story"] .story-chapters { display: grid; gap: clamp(.9rem, 2.6vw, 1.75rem); }
+  .memorial-counter {
+    grid-column: 1 / -1;
+    margin-block-end: clamp(.4rem, 2vw, 1.1rem);
+    padding: .8rem 1rem;
+    border-block: 1px solid var(--rule);
+    text-align: center;
+    font: 500 clamp(1.08rem, .95rem + .6vw, 1.4rem)/1.55 var(--serif);
+  }
+  .memorial-counter strong { color: var(--accent); font-size: 1.35em; font-variant-numeric: tabular-nums; }
+  .memorial-counter-note { color: var(--muted); font: .84rem/1.5 var(--sans); }
+  .daily-story-heading { display: flex; align-items: baseline; flex-wrap: wrap; gap: .35rem 1rem; }
+  .daily-story-heading h2 { font: 700 clamp(1.4rem, 1.2rem + .65vw, 1.8rem)/1.25 var(--serif); }
+  .daily-story-heading time { font-size: .9rem; color: var(--muted); }
   .chapter {
     display: grid;
     grid-template-columns: minmax(0,1.3fr) minmax(0,1fr);
     align-items: center;
     gap: clamp(1rem, 5vw, 4.5rem);
   }
-  .chapter:nth-child(even) { grid-template-columns: minmax(0,1fr) minmax(0,1.3fr); }
-  .chapter:nth-child(even) img { order: 2; }
   .chapter > img {
     width: auto;
     height: auto;
@@ -316,11 +327,10 @@
   }
   .chapter > div { max-width: 27em; }
   .chapter-year { font-size: .9rem; color: var(--accent); letter-spacing: .1em; }
-  .chapter h2 { margin: .25rem 0 .6rem; font: 500 clamp(1.65rem,3vw,2.6rem)/1.35 var(--serif); }
+  .chapter h3 { margin: .25rem 0 .6rem; font: 500 clamp(1.65rem,3vw,2.6rem)/1.35 var(--serif); }
   .chapter-link { display: inline-flex; align-items: center; min-height: 44px; margin-top: .35rem; color: var(--accent); }
   @media (max-width: 42rem) {
-    .chapter, .chapter:nth-child(even) { grid-template-columns: minmax(0,1fr); gap: .7rem; }
-    .chapter:nth-child(even) img { order: 0; }
+    .chapter { grid-template-columns: minmax(0,1fr); gap: .7rem; }
     [data-variant="story"] .hero h1 { font-size: clamp(2.2rem, 9vw, 3.4rem); }
     [data-variant="guide"] .hero, [data-variant="guide"] .dates { padding-inline: 0; }
   }
@@ -444,12 +454,23 @@
       </a>
     </header>
 
-    <section class="story-chapters" aria-label="媽媽的故事">
-      <article class="chapter"><img src="assets/album/1977-2.webp" alt="1977 年，媽媽靠在窗邊的椅子上。" loading="lazy">
-        <div><p class="chapter-year">1977</p><h2>窗邊的媽媽</h2><p>這是媽媽婚後的生活照。她靠著椅背，光從身後的窗戶照進來。</p><a class="chapter-link" data-slide="1977-2" href="#photos">翻看這一年的照片 →</a></div>
-      </article>
-      <article class="chapter"><img src="assets/album/grad-3.webp" alt="大學畢業典禮當天，媽媽與家人在花旁合影。" loading="lazy">
-        <div><p class="chapter-year">大學畢業典禮</p><h2>畢業那一天</h2><p>我大學畢業那天，我們和媽媽一起拍了照。那天的合照也收在相簿裡。</p><a class="chapter-link" data-slide="grad-1" href="#photos">看畢業典禮的合照 →</a></div>
+    <section class="story-chapters" id="daily-memory" aria-labelledby="daily-memory-title">
+      <div class="memorial-counter" hidden>
+        <p>媽媽無病無痛，自在地過了 <strong id="days-free"></strong> 天</p>
+        <p class="memorial-counter-note">從 2026 年 11 月 15 日算起</p>
+      </div>
+      <div class="daily-story-heading">
+        <h2 id="daily-memory-title">今日的回憶</h2>
+        <time id="daily-date" hidden></time>
+      </div>
+      <article class="chapter">
+        <img id="daily-photo" src="assets/album/1977-2.webp" alt="1977 年，媽媽靠在窗邊的椅子上。" loading="lazy">
+        <div>
+          <p class="chapter-year" id="daily-year">1977 年</p>
+          <h3 id="daily-title">窗邊的媽媽</h3>
+          <p id="daily-description">這是媽媽婚後的生活照。她靠著椅背，光從身後的窗戶照進來。</p>
+          <a class="chapter-link" id="daily-album-link" data-slide="1977-2" href="#photos">到相簿看這張照片</a>
+        </div>
       </article>
     </section>
     <section class="dates" id="dates" aria-labelledby="dates-title">
@@ -894,6 +915,131 @@
     byId('photo-viewer-caption').textContent = photo.alt;
     photoViewer.showModal();
   });
+  const dailyStories = [
+    ["1977-2", "窗邊的媽媽", "這是媽媽婚後的生活照。她靠著椅背，光從身後的窗戶照進來。"],
+    ["1978-1f94890846b8-1", "大樹底下", "枝葉在兩人頭頂撐開。這張照片留下了媽媽和大兒子一起坐在樹下的片刻。"],
+    ["1982-cc90dfb344c2-1", "望向海的那一邊", "媽媽坐在岸邊，身後是海浪與礁石。鏡頭留下她望向遠處的側臉。"],
+    ["1994-68cbecbe39ef-1", "花叢旁的回眸", "淺色的小花佔了大半張照片。媽媽站在花叢旁，穿著紅色上衣，回頭望向鏡頭。"],
+    ["grad-3", "畢業那一天", "我大學畢業那天，我們和媽媽一起拍了照。照片裡，媽媽和家人站在花旁，留下了那天的笑容。"],
+    ["1976-1", "禮服裡的年輕模樣", "兩人穿著正式的衣服並肩站立，身後是帶花紋的布幔。相簿從這裡留住了媽媽年輕時的模樣。"],
+    ["1988-dff7efcad862-1", "大新街的家族合照", "一家人在大新街排開，有人站著，有人在前排稍稍蹲低。這張照片把大大小小的身影留在了一起。"],
+    ["1993-87562d34659e-1", "旅途中的一座橋", "遠處的尖塔和近處的白欄杆框住了街景。媽媽站在橋上，留下旅途中一張帶著陽光的照片。"],
+    ["1976-2", "海邊的腳印", "媽媽站在沙灘上，海面在背後拉成一條長線。遠處還有幾個人，同一片沙灘也留下了他們的身影。"],
+    ["1981-e1e45c6ca0ee-4", "圍坐在桌邊", "大人和孩子挨在一起，小小的身影就在手臂之間。桌面上的暖光和家人的臉，一起留在這張相片裡。"],
+    ["1985-3", "遠山入鏡", "層層山稜在媽媽身後向遠處淡去。她站在欄杆前，和山景一起留在這張淺色的老照片裡。"],
+    ["1976-3", "塔影前的小路", "媽媽站在木欄邊，樹影後面露出層疊的塔簷。老照片裡，她的淺色衣服和深色樹影格外分明。"],
+    ["1982-cc90dfb344c2-6", "一家人的餐桌", "大人和孩子在桌邊排成一圈，桌上擺著盤子。相簿把這個一家人聚在一起的一餐留了下來。"],
+    ["1993-87562d34659e-2", "雕像下的旅人", "巨大的石雕幾乎佔滿畫面，媽媽站在雕像前。這一張留住了旅途裡讓人抬頭細看的景色。"],
+    ["1977-47993fd58e71-2", "媽媽懷裡的孩子", "媽媽抱著小小的孩子，微微轉向鏡頭。最先讓人看見的是她的臉，接著是懷裡那張仰起的小臉。"],
+    ["1984-2", "欄杆邊的擁抱", "海岸在一家人身後展開。媽媽和孩子靠在一起，留下一張有海、有風，也有人相伴的照片。"],
+    ["1991-6fd59d974e68-1", "水岸亭台", "媽媽站在水邊，對岸的長廊和遠山一起映入眼簾。這是相簿裡一處清清靜靜的風景。"],
+    ["1976-4", "樹蔭下的欄杆", "一棵樹斜斜伸進畫面。媽媽在欄杆旁停下來，背後是一大片亮起來的風景。"],
+    ["1986-f7e82cd819a3-4", "一群人，一張照片", "有人站在後排，有人坐在前面。花和桌上的物件擠在畫面一角，把這張合照留成一幅熱鬧的室內景象。"],
+    ["1993-87562d34659e-3", "走進窄街", "兩側的老建築把人行道圍成一條長巷。媽媽戴著帽子站在街上，遠處的行人也一同入鏡。"],
+    ["1978-2", "坐在階梯上", "長長的階梯一路往上。媽媽和孩子坐在邊上，直到今天仍能從這張照片看見他們挨著彼此的樣子。"],
+    ["1982-4", "門口的全家福", "磚牆和格子窗佔了大半個背景。家人聚在門口，前排還有個矮矮的身影。"],
+    ["1993-87562d34659e-8", "帽簷下的笑容", "寬帽簷和墨鏡把媽媽的臉遮了一半。她靠在水邊，亮紅色的衣服在整張照片裡特別醒目。"],
+    ["1976-5", "樹叢間的身影", "枝葉把畫面填得密密的。媽媽站在其中，淺色的衣服從一片樹影裡顯了出來。"],
+    ["1985-b-1", "聚餐的桌邊", "桌上擺著杯盤，旁邊是一大束花。大家圍坐在一起，有人看著鏡頭，也有人轉向身旁的人。"],
+    ["1992-40a5ad9dcbdb-1", "岩壁旁的停留", "媽媽戴著墨鏡，身旁是一塊淺色石壁。照片前方露出一抹暖黃色，和岩石的暗色相襯。"],
+    ["1979-cd6383a315c2-1", "媽媽與哥哥", "媽媽和哥哥靠得很近，兩人的目光都往下。這一格相片保留了家人相處時一個安靜的瞬間。"],
+    ["1987-1c7bb0c9470c-2", "礁石上的合照", "一家人在岩石間靠攏，身後是一大片藍色。照片洗得有點淡了，仍看得見衣服和海面的顏色。"],
+    ["1993-87562d34659e-6", "橋塔前的紅衣", "兩座橋塔在遠處高高立起，媽媽穿著紅衣站在岸邊。這張照片把她的身影和旅途景色一起留下。"],
+    ["1976-6", "走在林間", "細長的樹幹排在路邊，媽媽站在石階附近。遠近交錯的樹影，把視線一路引向照片裡的那條路。"],
+    ["1981-e1e45c6ca0ee-3", "門廊下的一家人", "大人站在後排，孩子們聚在前面。熟悉的臉孔和身後的門廊，留住了那時一家人的模樣。"],
+    ["1993-87562d34659e-9", "窗簾與桌燈", "媽媽坐在圓桌旁，窗簾和桌燈在畫面兩側。相簿也留下了這樣光線柔和的室內一景。"],
+    ["1976-7", "戶外的並肩合影", "兩個人穿著顏色不同的衣服，靠在一起看鏡頭。身後的樹葉顏色很深，讓兩人的身影格外明亮。"],
+    ["1982-1", "路邊的一家人", "一家大大小小聚在戶外，孩子站在前頭。背後有一片山影，記下了這張全家出遊的相片。"],
+    ["1993-87562d34659e-4", "草地另一端", "媽媽站在一片草地前，遠處的建築被花壇和小徑分開。淺色的衣服和身後的綠地一起入鏡。"],
+    ["1976-8", "窗簾旁的室內照", "高窗旁垂著長窗簾，畫面裡一人坐著、一人站著。留影的那一角被窗邊的光照得很柔和。"],
+    ["1984-1", "樹下的親子照", "樹幹在家人身後向上延伸。媽媽和孩子停在樹邊，讓鏡頭留下了出門時的一段光景。"],
+    ["1990-eb3bf70e3140-1", "廣場上的小小身影", "家人站在開闊的廣場上，身後是淺色的牆。這張相片把遠景和人都留得很小，讓人想慢慢走近細看。"],
+    ["1976-dc5556da4134-1", "媽媽與江家人", "家人分成前後兩排，在同一個鏡頭前留下身影。這是相簿裡一張早年的江家合照。"],
+    ["1982-5", "把孩子抱近一點", "媽媽戴著墨鏡，把孩子抱在懷裡。旁邊的孩子轉過身來，幾張臉就這麼靠在一起。"],
+    ["1993-87562d34659e-5", "在街邊合影", "旅伴們在建築外靠攏，衣服的顏色和花紋各不相同。這一張歐洲相簿裡的照片，留下了一起旅行的人。"],
+    ["1977-1", "庭院裡坐一會兒", "媽媽在庭院中坐著，身旁是花木，遠處是屋簷。這張照片留下一個可以靜靜看很久的日常畫面。"],
+    ["1985-1", "山景前的一抹紅", "遠處的山景洗得很淡，媽媽身上的紅衣卻還亮著。她站在戶外看向鏡頭，留下一張簡單的旅行照。"],
+    ["grad-2", "花束的顏色", "畢業照裡的花是明亮的黃色。枝葉和花束來到畫面前方，讓這張留影有了和其他合照不同的樣子。"],
+    ["1977-47993fd58e71-1", "窗邊的親子時光", "窗外亮著，屋裡的家具和窗簾留在暗處。媽媽坐在窗旁，孩子靠在她懷裡。"],
+    ["1982-2", "沿著木欄遠望", "家人們在木欄旁合照，欄杆後方是一片開闊的景色。照片也把那天出門時的明亮光線留了下來。"],
+    ["1993-87562d34659e-10", "廣場上的雕像", "媽媽戴著帽子站在廣場上，深色雕像高高立在她身後。這一刻，她和旅途中遇見的街景同框。"],
+    ["1977-47993fd58e71-3", "小路上的合照", "大人和孩子站在小路旁，屋簷和植物都入了鏡。一張合照，也留下了他們那天經過的地方。"],
+    ["1986-f7e82cd819a3-2", "水邊的一身淺藍", "媽媽穿著淺藍色衣服，坐在水邊的石頭上。背後的暗色岩壁，把她的身影襯得很清楚。"],
+    ["1987-1c7bb0c9470c-1", "把海放在身後", "兩人並肩坐在海岸的岩石上，視線都朝向鏡頭。照片後方的海面，一路延伸到泛白的天空。"],
+    ["1977-47993fd58e71-4", "屋簷下歇一會兒", "門柱、牆面和椅子圍出一角空間。家人坐在屋簷下，留下了相簿裡這張安靜的合照。"],
+    ["1985-2", "瀑布旁的身影", "岩壁間落下一道水光，家人在石頭旁合影。留到現在的這一格，還看得見水和岩石的形狀。"],
+    ["1993-87562d34659e-7", "兩人站在欄杆邊", "媽媽穿著紅衣，和同行的人並肩站在欄杆前。遠處的建築和水岸，把旅途的背景一併留住。"],
+    ["1977-47993fd58e71-5", "那年的家族合影", "家人站在後排，前面也坐著幾位大人和孩子。老相簿把幾代人的樣子一起收進了這一張。"],
+    ["1982-cc90dfb344c2-2", "熱鬧的室內合照", "幾個人站在一起，牆上有深色的裝飾，門窗旁有亮光。畫面裝進了人，也裝進了當時聚在一起的地方。"],
+    ["1984-444ad54aadac-1", "靠近一點拍張照", "兩人肩靠著肩，身前的桌面映出一塊亮光。這是一張夫妻合照，留下了兩人一起看鏡頭的樣子。"],
+    ["1978-1", "門前的兩個人", "木門和窗格在身後排開，兩人並肩站在屋內。舊相片帶著些暖色，衣服的花紋仍看得分明。"],
+    ["1982-cc90dfb344c2-4", "棚下看水", "棚架從畫面上方伸出，家人停在欄杆旁，身後是水面。相簿裡這一張，連走過的路都拍了進來。"],
+    ["1986-f7e82cd819a3-1", "桌邊的兩個人", "兩人在桌邊相依而坐，身後是室內的暗色牆面。桌上的細節都很小，兩人的表情卻十分清楚。"],
+    ["1979-1", "房間的一角", "媽媽的身後有木櫃，旁邊掛著淺色的衣物。這張室內照留下了她，也留下了那時生活的一小角。"],
+    ["1985-b-2", "花園小徑", "花圃兩側是棕櫚樹，媽媽站在小徑上。從這張照片往遠處看，還能看見一整排樹。"],
+    ["1987-1c7bb0c9470c-3", "同一片海岸", "孩子站到前排，大人靠在礁石邊。這張和同冊的海邊照一樣有藍色的海，留下的站位各自不同。"],
+    ["1980-1", "門邊探出的身影", "石砌牆面和門框佔去大半畫面，媽媽站在一旁。她從門邊露出身影，看向拍照的人。"],
+    ["1982-3", "大樹旁的合影", "樹根和枝幹在家人背後交錯，幾個身影擠在樹旁。這棵樹也成了相簿裡容易認出的一處背景。"],
+    ["1989-e0925c21e96c-1", "水邊走過", "水邊有柱子和欄杆，地面照出明亮的反光。媽媽站在景色之中，身影被四周的光包圍。"],
+    ["1981-e1e45c6ca0ee-1", "在家抱著孩子", "孩子在大人臂彎裡，旁邊還有家人靠近。從一張直幅的照片，能看見那一刻幾個人貼得很近。"],
+    ["1984-3", "岩石邊的三個人", "媽媽和孩子在岩石前停下來。天空把背景照得很亮，三個人的身影在照片中央聚成一團。"],
+    ["grad-1", "穿學士服的一天", "畢業那天的學士服和家人的衣服一起入鏡。這張相片留下了典禮之外，大家站在戶外合影的一刻。"],
+    ["1981-e1e45c6ca0ee-2", "陽光下的一家人", "幾個人站在戶外小路上，旁邊是長滿葉子的植物。這張老照片亮得像那天正好有陽光。"],
+    ["1982-6", "站在開闊的風景前", "媽媽戴著帽子站在前景，身後是遠遠近近的景色。從她身旁望出去，整片風景都在照片裡。"],
+    ["1985-4", "山景裡的合照", "家人在樹色深的地方站在一起，孩子在大人中間。這張山間的照片，留下了彼此靠近的樣子。"],
+    ["1981-e1e45c6ca0ee-5", "桌邊的小手", "孩子和大人聚在桌邊，桌上有一片暖色。相簿留下了他們靠攏時的姿勢，也留下了室內那一點光。"],
+    ["1982-cc90dfb344c2-3", "在亮得發白的天空下", "媽媽和孩子站在戶外，前排的孩子離鏡頭比較近。背景淡了許多，衣服和身影還清楚可見。"],
+    ["1986-f7e82cd819a3-3", "花旁的室內合照", "花擺在椅子旁，幾個身影在室內靠在一起。玻璃窗與花枝都入了鏡，留下家人相聚的背景。"],
+    ["1982-cc90dfb344c2-5", "門柱旁的一家人", "媽媽與孩子們站在門柱旁，柱上的紅字仍清楚可見。一張小小的合照，也留下當時經過的門口。"],
+  ];
+
+  const dailyMemory = byId('daily-memory');
+  const dailyPhoto = byId('daily-photo');
+  const dailyLink = byId('daily-album-link');
+  const dailyDate = byId('daily-date');
+  const daysFree = byId('days-free');
+  const slidesById = new Map(slides.map(slide => [slide.id, slide]));
+  const millisecondsPerDay = 86400000;
+  const taipeiOffset = 8 * 60 * 60 * 1000;
+  const memorialDay = Date.UTC(2026, 10, 15) / millisecondsPerDay;
+  const firstStoryDay = Date.UTC(2026, 10, 21) / millisecondsPerDay;
+  const formatStoryDate = new Intl.DateTimeFormat('zh-TW', {
+    month: 'long', day: 'numeric', timeZone: 'UTC',
+  });
+  let displayedDay;
+  let nextDayTimer;
+
+  function refreshDailyMemory() {
+    const now = Date.now();
+    const taipeiDay = Math.floor((now + taipeiOffset) / millisecondsPerDay);
+    if (taipeiDay !== displayedDay) {
+      const storyIndex = Math.max(0, taipeiDay - firstStoryDay) % dailyStories.length;
+      const [id, title, description] = dailyStories[storyIndex];
+      const slide = slidesById.get(id);
+      const date = new Date(taipeiDay * millisecondsPerDay);
+      dailyDate.dateTime = date.toISOString().slice(0, 10);
+      dailyDate.textContent = formatStoryDate.format(date);
+      byId('daily-year').textContent = slide.group;
+      byId('daily-title').textContent = title;
+      byId('daily-description').textContent = description;
+      if (dailyPhoto.getAttribute('src') !== slide.src) dailyPhoto.src = slide.src;
+      dailyPhoto.alt = slide.label;
+      dailyLink.dataset.slide = id;
+      daysFree.textContent = String(Math.max(0, taipeiDay - memorialDay));
+      dailyDate.hidden = false;
+      dailyMemory.querySelector('.memorial-counter').hidden = false;
+      displayedDay = taipeiDay;
+    }
+    clearTimeout(nextDayTimer);
+    const nextTaipeiMidnight = (taipeiDay + 1) * millisecondsPerDay - taipeiOffset;
+    nextDayTimer = setTimeout(refreshDailyMemory, nextTaipeiMidnight - Date.now());
+  }
+  refreshDailyMemory();
+  window.addEventListener('pageshow', refreshDailyMemory);
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) refreshDailyMemory();
+  });
+
   for (const link of document.querySelectorAll('.chapter-link')) {
     link.addEventListener('click', () => {
       stopPlayback();
