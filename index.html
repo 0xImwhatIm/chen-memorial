@@ -318,6 +318,11 @@
     align-items: center;
     gap: clamp(1rem, 5vw, 4.5rem);
   }
+  [data-variant="story"] .original-stories { gap: clamp(2rem, 6vw, 4.5rem); }
+  @media (min-width: 42.01rem) {
+    .original-stories .chapter:nth-child(2) { grid-template-columns: minmax(0,1fr) minmax(0,1.3fr); }
+    .original-stories .chapter:nth-child(2) > img { order: 2; }
+  }
   .chapter > img {
     width: auto;
     height: auto;
@@ -327,7 +332,7 @@
   }
   .chapter > div { max-width: 27em; }
   .chapter-year { font-size: .9rem; color: var(--accent); letter-spacing: .1em; }
-  .chapter h3 { margin: .25rem 0 .6rem; font: 500 clamp(1.65rem,3vw,2.6rem)/1.35 var(--serif); }
+  .chapter :is(h2, h3) { margin: .25rem 0 .6rem; font: 500 clamp(1.65rem,3vw,2.6rem)/1.35 var(--serif); }
   .chapter-link { display: inline-flex; align-items: center; min-height: 44px; margin-top: .35rem; color: var(--accent); }
   @media (max-width: 42rem) {
     .chapter { grid-template-columns: minmax(0,1fr); gap: .7rem; }
@@ -454,6 +459,14 @@
       </a>
     </header>
 
+    <section class="story-chapters original-stories" aria-label="媽媽的故事">
+      <article class="chapter"><img src="assets/album/1977-2.webp" alt="1977 年，媽媽靠在窗邊的椅子上。" loading="lazy">
+        <div><p class="chapter-year">1977</p><h2>窗邊的媽媽</h2><p>這是媽媽婚後的生活照。她靠著椅背，光從身後的窗戶照進來。</p><a class="chapter-link" data-slide="1977-2" href="#photos">翻看這一年的照片 →</a></div>
+      </article>
+      <article class="chapter"><img src="assets/album/grad-3.webp" alt="大學畢業典禮當天，媽媽與家人在花旁合影。" loading="lazy">
+        <div><p class="chapter-year">大學畢業典禮</p><h2>畢業那一天</h2><p>我大學畢業那天，我們和媽媽一起拍了照。那天的合照也收在相簿裡。</p><a class="chapter-link" data-slide="grad-1" href="#photos">看畢業典禮的合照 →</a></div>
+      </article>
+    </section>
     <section class="story-chapters" id="daily-memory" aria-labelledby="daily-memory-title">
       <div class="memorial-counter" hidden>
         <p>媽媽無病無痛，自在地過了 <strong id="days-free"></strong> 天</p>
