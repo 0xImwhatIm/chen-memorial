@@ -346,7 +346,14 @@
   }
   .rest-scene svg { display: block; width: 100%; height: auto; }
   .rest-scene .pp { fill: var(--scene-paper); }
-  .rest-scene .figure-hit, .rest-scene .baby-hit { cursor: pointer; touch-action: manipulation; }
+  .rest-scene :is(.figure-hit, .baby-hit) {
+    cursor: pointer;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  .rest-scene :is(.figure-hit, .baby-hit):focus:not(:focus-visible) { outline: none; }
   .rest-scene .figure-hit:focus-visible, .rest-scene .baby-hit:focus-visible {
     stroke: #894f3d; stroke-width: 1; stroke-dasharray: 2 2;
   }
