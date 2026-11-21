@@ -90,6 +90,11 @@
   .section-title h2 { font: 700 clamp(1.7rem, 1.45rem + 1vw, 2.5rem)/1.25 var(--heading); }
   .section-title p { color: var(--muted); margin-top: .38rem; }
 
+  .visit-info { margin: 0 0 1.15rem; padding: .9rem 1rem; background: var(--subtle); border-radius: var(--round); }
+  .visit-info h3 { font: 700 1.12rem/1.45 var(--heading); color: var(--accent); }
+  .visit-info p { margin-top: .3rem; }
+  .visit-info .actions { margin-top: .55rem; }
+
   .events { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .62rem; align-items: start; }
   .event { min-width: 0; border-top: 1px solid var(--rule); background: var(--panel); }
   .event summary {
@@ -330,6 +335,28 @@
   .chapter-year { font-size: .9rem; color: var(--accent); letter-spacing: .1em; }
   .chapter h2 { margin: .25rem 0 .6rem; font: 500 clamp(1.65rem,3vw,2.6rem)/1.35 var(--serif); }
   .chapter-link { display: inline-flex; align-items: center; min-height: 44px; margin-top: .35rem; color: var(--accent); }
+  .rest-scene {
+    width: min(100%, 23rem);
+    margin: .25rem 0 0;
+    color: var(--muted);
+    --scene-paper: var(--bg);
+    --dress: color-mix(in srgb, var(--bg) 70%, #b68b83);
+    --hair: color-mix(in srgb, var(--ink) 72%, var(--bg));
+    --hair-glint: var(--bg);
+  }
+  .rest-scene svg { display: block; width: 100%; height: auto; }
+  .rest-scene .pp { fill: var(--scene-paper); }
+  .rest-scene button {
+    background: none;
+    border: 0;
+    color: var(--accent);
+    font: .82rem var(--sans);
+    min-height: 44px;
+    padding: .25rem .35rem;
+    text-decoration: underline;
+    text-underline-offset: .2em;
+    cursor: pointer;
+  }
   @media (max-width: 42rem) {
     .chapter { grid-template-columns: minmax(0,1fr); gap: .7rem; }
     [data-variant="story"] .hero h1 { font-size: clamp(2.2rem, 9vw, 3.4rem); }
@@ -468,6 +495,10 @@
           <h2>窗邊的媽媽</h2>
           <p class="chapter-description">這是媽媽婚後的生活照。她靠著椅背，光從身後的窗戶照進來。</p>
           <a class="chapter-link" data-slide="1977-2" href="#photos">到相簿看這張照片</a>
+          <figure class="rest-scene" data-rest-scene hidden>
+            <div data-rest-art></div>
+            <button type="button">重播動畫</button>
+          </figure>
         </div>
       </article>
       <article class="chapter">
@@ -489,6 +520,14 @@
         <h2 id="dates-title">重要日期與交通</h2>
         <p>點選場次可查看地址與路線。時間與參與方式請以家屬通知為準。</p>
       </div>
+      <section class="visit-info" aria-labelledby="visit-title">
+        <h3 id="visit-title">出殯前，可以到大眾位看看媽媽</h3>
+        <p>頭七儀式已圓滿結束。媽媽的牌位已移到原會館對面的龍巖民權會館 B 棟。</p>
+        <p><strong>臺北市中山區民權東路二段 125 號</strong><br>由 B 棟入口上 2 樓，到大眾位找 18 號牌位（2F18）。</p>
+        <div class="actions">
+          <a class="action" href="https://www.google.com/maps/dir/?api=1&amp;destination=%E8%87%BA%E5%8C%97%E5%B8%82%E4%B8%AD%E5%B1%B1%E5%8D%80%E6%B0%91%E6%AC%8A%E6%9D%B1%E8%B7%AF%E4%BA%8C%E6%AE%B5125%E8%99%9F" target="_blank" rel="noopener">導航至 125 號</a>
+        </div>
+      </section>
       <div class="events" id="events"></div>
     </section>
 
@@ -676,11 +715,11 @@
 
   const events = [
     {
-      date: '11/21', iso: '2026-11-21', name: '頭七', time: '週六 13:00–15:00', venue: '民權會館 103 室',
+      date: '11/21', iso: '2026-11-21', name: '頭七（已結束）', time: '週六 13:00–15:00', venue: '民權會館 103 室',
       address: '臺北市中山區民權東路二段 166 號',
       travel: '搭捷運可在行天宮站下車，再依 Google 地圖步行至會館。',
       route: ['民權會館入口', '櫃檯', '103 室'],
-      note: '當日傍晚會移位，較晚到的親友請先向家屬確認位置。'
+      note: '頭七儀式已圓滿結束。出殯前探訪請參考上方的大眾位資訊。'
     },
     {
       date: '11/29', iso: '2026-11-29', name: '尾七', time: '週日 13:00–15:00', venue: '龍巖包廂・3 樓',
@@ -1227,5 +1266,6 @@
     }
   });
 </script>
+<script type="module" src="assets/rest-scene/scene.js"></script>
 </body>
 </html>
