@@ -339,8 +339,11 @@
     width: min(100%, 23rem);
     margin: .25rem 0 0;
     color: var(--muted);
+    --scene-paper: var(--bg);
+    --dress: color-mix(in srgb, var(--bg) 70%, #b68b83);
+    --hair: color-mix(in srgb, var(--ink) 72%, var(--bg));
+    --hair-glint: var(--bg);
   }
-  .rest-scene-art { background: #fdfcf8; border-radius: .25rem; }
   .rest-scene svg { display: block; width: 100%; height: auto; }
   .rest-scene .pp { fill: var(--scene-paper); }
   .rest-scene .figure-hit, .rest-scene .baby-hit { cursor: pointer; touch-action: manipulation; }
@@ -1270,6 +1273,6 @@
     }
   });
 </script>
-<script type="module" src="assets/rest-scene/story-animations.js?v=4"></script>
+<script type="module" src="assets/rest-scene/story-animations.js?v=5"></script>
 </body>
 </html>

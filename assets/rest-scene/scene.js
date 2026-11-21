@@ -1,8 +1,8 @@
-import { el, pen, limb, shoe, blot, place, joint } from './vendor/ink.js';
+import { el, pen, limb, shoe, blot, place, joint, paint } from './vendor/ink.js';
 import { gait } from './vendor/gait.js';
 import { ease, minJerk } from './vendor/motion.js';
 
-import { albumInk, albumScene, motherPortrait, paperShape, stroke } from './album-ink.js';
+import { albumInk, paperShape, stroke } from './album-ink.js?v=5';
 
 const ground = 130;
 const scale = 1.12;
@@ -103,11 +103,11 @@ export function restPoseAt(time, brush) {
 
 function drawWindow(scene) {
   const window = el('g', { 'aria-hidden': 'true' }, scene);
-  const frame = pen(window, 1.03);
-  frame.setAttribute('opacity', '.55');
+  const frame = pen(window, .92);
+  frame.setAttribute('opacity', '.35');
   frame.setAttribute('d', 'M192 110 V10 H309 V110 Z M196 106 V14 H305 V106 Z M250 14 V106 M254 14 V106 M188 110 H313');
   const view = pen(window, .73);
-  view.setAttribute('opacity', '.55');
+  view.setAttribute('opacity', '.28');
   view.setAttribute('d',
     'M211 32 Q216 28 221 32 Q226 28 231 32 M268 28 Q279 19 292 27 ' +
     'M299 39 Q290 48 287 64 M298 42 Q292 39 285 40 M294 47 Q296 40 295 36 M291 53 Q285 48 280 49');
@@ -177,9 +177,13 @@ function drawFigure(scene, onBrush) {
   const farArm = limb(person, albumInk.armWidth, 1.16);
   const legs = [limb(person, albumInk.legWidth, albumInk.outline), limb(person, albumInk.legWidth, albumInk.outline)];
   const shoes = [blot(person), blot(person)];
-  const dress = paperShape(person, '');
+  const dress = paint(person, 'var(--dress)', 1.28);
   const seams = pen(person, albumInk.detail);
-  const portrait = motherPortrait(person);
+  const neck = pen(person, 1.05);
+  const face = paint(person, 'var(--scene-paper)', 1.05);
+  const hair = paint(person, 'var(--hair)', 1.1);
+  const hairline = pen(person, .64);
+  hairline.setAttribute('stroke', 'var(--hair-glint)');
   const nearArm = limb(person, albumInk.armWidth, albumInk.outline);
   const cuff = pen(person, albumInk.detail);
   const fingers = pen(person, .87);
@@ -233,12 +237,23 @@ function drawFigure(scene, onBrush) {
        Q${wx-4.4} ${wy+2.4} ${wx-5.5} ${wy-.6}
        Q${rx-8} ${ry+.6} ${sx-7.1} ${sy+8.5} Q${sx-8.1} ${sy+4} ${sx-6.5} ${sy+.7} Z`);
     seams.setAttribute('d',
-      `M${wx-4.4} ${wy+.6} Q${wx} ${wy+2} ${wx+4.1} ${wy+.6}
+      `M${sx-3} ${sy+1} Q${sx} ${sy+8} ${sx+5} ${sy+1}
+       M${wx-4.4} ${wy+.6} Q${wx} ${wy+2} ${wx+4.1} ${wy+.6}
        M${wx+1.2} ${wy+3} Q${hx+1.3} ${hy+4} ${mix(hx-2.2,hemFront-4.2,drape)} ${mix(hemY-3,lapY+2.2,drape)}
        M${hemFront-1.4} ${hemY-1.8} q-1.9 .8 -3.7 .5`);
     const headX = pose.head[0] + 1 - pose.liftHand * 1.65;
     const headY = pose.head[1] - pose.liftHand * 1.1;
-    portrait(headX, headY, pose.headAngle);
+    neck.setAttribute('d', `M${headX-2} ${headY+7} Q${headX-2} ${headY+10} ${sx-4} ${sy} M${headX+4} ${headY+7} L${sx+4} ${sy+1}`);
+    face.setAttribute('d',
+      `M${headX-5} ${headY-5} Q${headX+1} ${headY-11} ${headX+5} ${headY-5}
+       Q${headX+6} ${headY-2} ${headX+7} ${headY} L${headX+6} ${headY+1.5}
+       Q${headX+6} ${headY+8} ${headX+3} ${headY+8} Q${headX-4} ${headY+6} ${headX-5} ${headY-5} Z`);
+    hair.setAttribute('d',
+      `M${headX+6} ${headY-4} C${headX+6} ${headY-9} ${headX} ${headY-11} ${headX-4} ${headY-9}
+       C${headX-10} ${headY-7} ${headX-9} ${headY} ${headX-8} ${headY+4}
+       Q${headX-6} ${headY+9} ${headX-2} ${headY+7} Q${headX-5} ${headY+3} ${headX-3} ${headY+1}
+       Q${headX+1} ${headY-1} ${headX+2} ${headY-6} Q${headX+4} ${headY-6} ${headX+6} ${headY-4} Z`);
+    hairline.setAttribute('d', `M${headX+1} ${headY-8} Q${headX-5} ${headY-9} ${headX-7} ${headY-2}`);
     const swing = (pose.feet[0].ankle[0] - 40) * pose.pace;
     const armStart = [sx+6.8, sy+7.5];
     const farShoulder = [sx-3.6, sy+5.1];
@@ -263,7 +278,11 @@ function drawFigure(scene, onBrush) {
 }
 
 export function drawWindowScene(container, onBrush) {
-  const { drawing: scene } = albumScene(container, '窗邊的媽媽。步行時點媽媽，她會停下來撥髮，再走到藤椅坐下。');
+  const svg = el('svg', {
+    viewBox: '0 0 320 140', role: 'group',
+    'aria-label': '窗邊的媽媽。步行時點媽媽，她會停下來撥髮，再走到藤椅坐下。',
+  }, container);
+  const scene = el('g', {}, svg);
   drawWindow(scene);
   const floor = pen(scene, .82);
   floor.setAttribute('opacity', '.42');

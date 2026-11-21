@@ -1,5 +1,5 @@
-import { brushDuringWalk, drawWindowScene, duration as windowDuration } from './scene.js?v=4';
-import { drawTreeScene, duration as treeDuration, waveDuration } from './tree.js?v=4';
+import { brushDuringWalk, drawWindowScene, duration as windowDuration } from './scene.js?v=5';
+import { drawTreeScene, duration as treeDuration, waveDuration } from './tree.js?v=5';
 
 const windowPhoto = '1977-2';
 const treePhoto = '1978-1f94890846b8-1';
