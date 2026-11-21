@@ -137,11 +137,11 @@ function drawFigure(scene) {
   };
 }
 
-function mountRestScene(container) {
+export function drawWindowScene(container) {
   const svg = el('svg', {
     viewBox: '0 0 320 140', role: 'img',
     'aria-label': '線稿中的短髮女士穿著洋裝，走到窗邊的藤製躺椅坐下。',
-  }, container.querySelector('[data-rest-art]'));
+  }, container);
   const scene = el('g', {}, svg);
   drawWindow(scene);
   const floor = pen(scene, .82);
@@ -151,44 +151,5 @@ function mountRestScene(container) {
   const render = drawFigure(scene);
   scene.appendChild(chairArm);
 
-  const replay = container.querySelector('button');
-  const motion = matchMedia('(prefers-reduced-motion: reduce)');
-  let frame;
-  let observer;
-  function settle() {
-    cancelAnimationFrame(frame);
-    render(duration);
-    replay.hidden = motion.matches;
-  }
-  function play() {
-    observer?.disconnect();
-    cancelAnimationFrame(frame);
-    if (motion.matches) return settle();
-    const began = performance.now();
-    render(0);
-    function tick(now) {
-      const elapsed = Math.max(0, (now - began) / 1000);
-      if (elapsed >= duration) return settle();
-      render(elapsed);
-      frame = requestAnimationFrame(tick);
-    }
-    frame = requestAnimationFrame(tick);
-  }
-
-  settle();
-  container.hidden = false;
-  replay.addEventListener('click', play);
-  motion.addEventListener('change', () => {
-    observer?.disconnect();
-    settle();
-  });
-  if (!motion.matches && 'IntersectionObserver' in window) {
-    observer = new IntersectionObserver((entries) => {
-      if (entries.some((entry) => entry.isIntersecting)) play();
-    }, { threshold: .55 });
-    observer.observe(container);
-  }
+  return render;
 }
-
-const vignette = document.querySelector('[data-rest-scene]');
-if (vignette) mountRestScene(vignette);
