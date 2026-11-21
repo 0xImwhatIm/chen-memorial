@@ -339,13 +339,15 @@
     width: min(100%, 23rem);
     margin: .25rem 0 0;
     color: var(--muted);
-    --scene-paper: var(--bg);
-    --dress: color-mix(in srgb, var(--bg) 70%, #b68b83);
-    --hair: color-mix(in srgb, var(--ink) 72%, var(--bg));
-    --hair-glint: var(--bg);
   }
+  .rest-scene-art { background: #fdfcf8; border-radius: .25rem; }
   .rest-scene svg { display: block; width: 100%; height: auto; }
   .rest-scene .pp { fill: var(--scene-paper); }
+  .rest-scene .figure-hit, .rest-scene .baby-hit { cursor: pointer; touch-action: manipulation; }
+  .rest-scene .figure-hit:focus-visible, .rest-scene .baby-hit:focus-visible {
+    stroke: #894f3d; stroke-width: 1; stroke-dasharray: 2 2;
+  }
+  .rest-scene-hint { font-size: .8rem; }
   .rest-scene button {
     background: none;
     border: 0;
@@ -440,7 +442,11 @@
   .lotus-control { justify-self: start; }
   #lotus { min-inline-size: 9.5em; }
   .site-footer .content + .content { margin-top: .4rem; }
-  .rights { font-size: .88rem; }
+  .site-footer { color: color-mix(in srgb, var(--muted) 84%, var(--bg)); }
+  .rights, .site-footer > p { font-size: .85rem; }
+  .rights summary { cursor: pointer; padding: .35rem 0; width: fit-content; }
+  .rights p { margin: .45rem 0; }
+  .rights a { color: inherit; text-decoration: underline; text-underline-offset: .15em; }
   @media (max-width: 46rem) {
     .photo-frame { aspect-ratio: 1; }
   }
@@ -590,14 +596,16 @@
   </dialog>
 
   <footer class="site-footer">
-    <div class="content rights">
+    <details class="content rights">
+      <summary>著作權、肖像與授權</summary>
       <p>本站追思文字由家屬提供。陳淑英女士肖像及家族相簿僅供親友在本站追思閱覽。<br>
         照片著作權歸原權利人所有，請尊重照片中人物的肖像與隱私。<br>
         轉載、公開散布、改作或另作他用前，請先聯繫家屬，並取得相關權利人的同意。</p>
       <p>訪客留言的著作權歸原作者所有。</p>
       <p>追思配樂 <a href="https://www.scottbuckley.com.au/library/reverie/">〈Reverie〉— Scott Buckley</a>，依 <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> 授權，本站使用重新編碼的完整 MP3。</p>
       <p>故事版參考 <a href="https://html5up.net/story">Story by HTML5 UP</a>，原版型採 <a href="https://html5up.net/license">CC BY 3.0</a> 授權。</p>
-    </div>
+      <p>線條動畫使用 <a href="https://github.com/JDhruv14/line-art-animation">line-art-animation</a> 的部分程式，採 <a href="assets/rest-scene/vendor/LICENSE.txt">MIT 授權</a>。</p>
+    </details>
     <p class="content">行程與參與方式以家屬的正式通知為準。</p>
   </footer>
 </div>
@@ -1262,6 +1270,6 @@
     }
   });
 </script>
-<script type="module" src="assets/rest-scene/story-animations.js"></script>
+<script type="module" src="assets/rest-scene/story-animations.js?v=4"></script>
 </body>
 </html>

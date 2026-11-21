@@ -56,6 +56,9 @@
   .wall li{border-radius:7px;padding:9px 12px;background:var(--surface);animation:arrive .35s ease-out}
   .wall li p{white-space:pre-wrap;font-size:.91rem;margin-top:3px;color:var(--muted)}
   .wall-empty{margin:2px 0}
+  .credits.rights{color:color-mix(in srgb,var(--muted) 84%,var(--paper,#fbf8f0))}
+  .rights summary{cursor:pointer;width:fit-content}
+  .rights p{margin:.45rem 0}
   .credits{margin-top:22px;color:var(--muted);font-size:.8rem}.credits a{color:var(--accent)}
   @keyframes arrive{from{transform:translateY(6px);opacity:0}to{transform:none;opacity:1}}
   @media(max-width:690px){
@@ -120,7 +123,12 @@
       </section>
     </div>
     <p class="credits"><a href="./?view=story&amp;birthday=off">回到一般追思故事版</a></p>
-    <p class="credits">照片取自家族相簿。留言與禮物會保留在目前的瀏覽器。</p>
+    <details class="credits rights">
+      <summary>著作權與肖像</summary>
+      <p>照片取自家族相簿，僅供親友在本站追思閱覽。照片著作權歸原權利人所有，請尊重照片中人物的肖像與隱私。</p>
+      <p>轉載、公開散布、改作或另作他用前，請先聯繫家屬，並取得相關權利人的同意。</p>
+    </details>
+    <p class="credits">留言與禮物會保留在目前的瀏覽器。</p>
   </div>
 </main>
 <script>
