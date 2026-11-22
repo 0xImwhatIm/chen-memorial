@@ -1,3 +1,4 @@
+import { mountFlowerStory } from './flower-story.js';
 import { brushDuringWalk, drawWindowScene, duration as windowDuration } from './scene.js?v=5';
 import { drawTreeScene, duration as treeDuration, waveDuration } from './tree.js?v=5';
 
@@ -134,6 +135,10 @@ export function bindStoryAnimation(link) {
     if (photoId === currentId) return;
     unmount?.();
     currentId = photoId;
+    if (photoId === '1994-68cbecbe39ef-1') {
+      unmount = mountFlowerStory(link);
+      return;
+    }
     unmount = photoId === windowPhoto || photoId === treePhoto
       ? mount(link, photoId === treePhoto) : undefined;
   }

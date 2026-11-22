@@ -1147,13 +1147,15 @@
   const daysFree = byId('days-free');
   const slidesById = new Map(slides.map(slide => [slide.id, slide]));
   const firstStoryDay = Date.UTC(2026, 10, 21) / memorialCalendar.dayMs;
+  const previewPhoto = pageQuery.get('storyPhoto');
+  const previewIndex = previewPhoto ? dailyStories.findIndex(([id]) => id === previewPhoto) : -1;
   let displayedDay;
 
   function refreshDailyStories({dayNumber: taipeiDay, daysFree: elapsedDays, birthdaySeason}) {
     updateBirthdayLink(birthdaySeason);
     if (taipeiDay !== displayedDay) {
       const daysSinceFirstStory = Math.max(0, taipeiDay - firstStoryDay);
-      const firstIndex = daysSinceFirstStory * storyCards.length;
+      const firstIndex = previewIndex >= 0 ? previewIndex : daysSinceFirstStory * storyCards.length;
       for (const [offset, card] of storyCards.entries()) {
         const [id, title, description] = dailyStories[(firstIndex + offset) % dailyStories.length];
         const slide = slidesById.get(id);
@@ -1280,6 +1282,6 @@
     }
   });
 </script>
-<script type="module" src="assets/rest-scene/story-animations.js?v=5"></script>
+<script type="module" src="assets/rest-scene/story-animations.js?v=6"></script>
 </body>
 </html>
