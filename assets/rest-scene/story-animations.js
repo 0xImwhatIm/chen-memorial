@@ -1,3 +1,4 @@
+import { mountVeniceStory } from './venice-story.js';
 import { mountFlowerStory } from './flower-story.js';
 import { brushDuringWalk, drawWindowScene, duration as windowDuration } from './scene.js?v=5';
 import { drawTreeScene, duration as treeDuration, waveDuration } from './tree.js?v=5';
@@ -135,6 +136,10 @@ export function bindStoryAnimation(link) {
     if (photoId === currentId) return;
     unmount?.();
     currentId = photoId;
+    if (photoId === '1993-87562d34659e-1') {
+      unmount = mountVeniceStory(link);
+      return;
+    }
     if (photoId === '1994-68cbecbe39ef-1') {
       unmount = mountFlowerStory(link);
       return;

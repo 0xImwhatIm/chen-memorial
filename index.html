@@ -304,6 +304,56 @@
   [data-variant="story"] .hero-lead { margin: .65rem auto 0; }
   [data-variant="story"] .hero .actions { margin-top: .9rem; justify-content: center; }
   [data-variant="story"] .story-chapters { display: grid; gap: clamp(2rem, 6vw, 4.5rem); }
+  .story-book {
+    display: grid;
+    gap: inherit;
+    transform-origin: left center;
+  }
+  .story-archive {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: .35rem 1rem;
+    color: var(--muted);
+  }
+  .story-archive p { margin: 0; }
+  .story-archive-actions { display: flex; flex-wrap: wrap; gap: .25rem .8rem; }
+  .story-archive button {
+    min-height: 44px;
+    padding: .3rem .25rem;
+    border: 0;
+    background: none;
+    color: var(--accent);
+    font: inherit;
+    text-decoration: underline;
+    text-underline-offset: .22em;
+    cursor: pointer;
+  }
+  .story-archive button:disabled { opacity: .55; text-decoration: none; cursor: default; }
+  .venice-story { width: 100%; }
+  :root .venice-story {
+    --venice-ink: #564b40; --venice-stone: #e5d6c0; --venice-house-a: #e7dfcf;
+    --venice-house-b: #e4cab6; --venice-trim: #efe5d3; --venice-shade: #b3a697;
+    --venice-glass: #8c9897; --venice-water: #c5d7d1; --venice-ripple: #829e96;
+    --venice-bridge: #e4dac8; --venice-dress: #36494a; --venice-dress-line: #38413b;
+    --venice-petal: #e2cfaa; --venice-rose: #b97d75; --venice-leaf: #9cab8d;
+    --venice-skin: #ebcfaf; --venice-hair: #504139; --venice-hat: #ceb686;
+    --venice-band: #a87968; --venice-shoe: #725c4e; --venice-hull: #454348;
+    --venice-boat-line: #51473e; --venice-boat-trim: #cab995; --venice-seat: #ab7162;
+    --venice-shirt: #e8ddc8; --venice-stripe: #586665; --venice-sailor: #535351;
+  }
+  :root[data-theme="night"] .venice-story {
+    --venice-ink: #dbceb5; --venice-stone: #525050; --venice-house-a: #364249;
+    --venice-house-b: #4c4646; --venice-trim: #4c4946; --venice-shade: #5a5753;
+    --venice-glass: #3e454a; --venice-water: #384c55; --venice-ripple: #9baaa8;
+    --venice-bridge: #303a43; --venice-dress: #3a474a; --venice-dress-line: #e0cfb1;
+    --venice-petal: #d2ba92; --venice-rose: #b9897b; --venice-leaf: #96a496;
+    --venice-skin: #aa9987; --venice-hair: #384048; --venice-hat: #bda77f;
+    --venice-band: #c69a83; --venice-shoe: #d6c6ae; --venice-hull: #323b40;
+    --venice-boat-line: #dbceb5; --venice-boat-trim: #c5b69e; --venice-seat: #936860;
+    --venice-shirt: #bec0b5; --venice-stripe: #566266; --venice-sailor: #444e51;
+  }
   .memorial-counter {
     grid-column: 1 / -1;
     margin-block-end: clamp(.4rem, 2vw, 1.1rem);
@@ -321,8 +371,8 @@
     gap: clamp(1rem, 5vw, 4.5rem);
   }
   @media (min-width: 42.01rem) {
-    #story-chapters .chapter:nth-child(2) { grid-template-columns: minmax(0,1fr) minmax(0,1.3fr); }
-    #story-chapters .chapter:nth-child(2) > img { order: 2; }
+    .story-book > .chapter:nth-child(2) { grid-template-columns: minmax(0,1fr) minmax(0,1.3fr); }
+    .story-book > .chapter:nth-child(2) > img { order: 2; }
   }
   .chapter > img {
     width: auto;
@@ -504,24 +554,33 @@
     </header>
 
     <section class="story-chapters" id="story-chapters" aria-label="媽媽的故事">
-      <article class="chapter">
-        <img src="assets/album/1977-2.webp" alt="1977 年，媽媽靠在窗邊的椅子上。" loading="lazy">
-        <div>
-          <p class="chapter-year">1977</p>
-          <h2>窗邊的媽媽</h2>
-          <p class="chapter-description">這是媽媽婚後的生活照。她靠著椅背，光從身後的窗戶照進來。</p>
-          <a class="chapter-link" data-slide="1977-2" href="#photos">到相簿看這張照片</a>
+      <nav class="story-archive" aria-label="回看每日故事" id="story-archive" hidden>
+        <p aria-live="polite" id="story-page-date"></p>
+        <div class="story-archive-actions">
+          <button type="button" id="story-previous" aria-controls="story-book">回看前一天</button>
+          <button type="button" id="story-today" aria-controls="story-book" hidden>回到今天</button>
         </div>
-      </article>
-      <article class="chapter">
-        <img src="assets/album/grad-3.webp" alt="大學畢業典禮當天，媽媽與家人在花旁合影。" loading="lazy">
-        <div>
-          <p class="chapter-year">大學畢業典禮</p>
-          <h2>畢業的那一天</h2>
-          <p class="chapter-description">我大學畢業那天，我們和媽媽一起拍了照。那天的合照也收在相簿裡。</p>
-          <a class="chapter-link" data-slide="grad-3" href="#photos">到相簿看這張照片</a>
-        </div>
-      </article>
+      </nav>
+      <div class="story-book" id="story-book">
+        <article class="chapter">
+          <img src="assets/album/1977-2.webp" alt="1977 年，媽媽靠在窗邊的椅子上。" loading="lazy">
+          <div>
+            <p class="chapter-year">1977</p>
+            <h2>窗邊的媽媽</h2>
+            <p class="chapter-description">這是媽媽婚後的生活照。她靠著椅背，光從身後的窗戶照進來。</p>
+            <a class="chapter-link" data-slide="1977-2" href="#photos">到相簿看這張照片</a>
+          </div>
+        </article>
+        <article class="chapter">
+          <img src="assets/album/grad-3.webp" alt="大學畢業典禮當天，媽媽與家人在花旁合影。" loading="lazy">
+          <div>
+            <p class="chapter-year">大學畢業典禮</p>
+            <h2>畢業的那一天</h2>
+            <p class="chapter-description">我大學畢業那天，我們和媽媽一起拍了照。那天的合照也收在相簿裡。</p>
+            <a class="chapter-link" data-slide="grad-3" href="#photos">到相簿看這張照片</a>
+          </div>
+        </article>
+      </div>
       <div class="memorial-counter" hidden>
         <p>媽媽無病無痛，自在地過了 <strong id="days-free"></strong> 天</p>
         <p class="memorial-counter-note">從 2026 年 11 月 15 日算起</p>
@@ -1147,15 +1206,27 @@
   const daysFree = byId('days-free');
   const slidesById = new Map(slides.map(slide => [slide.id, slide]));
   const firstStoryDay = Date.UTC(2026, 10, 21) / memorialCalendar.dayMs;
-  const previewPhoto = pageQuery.get('storyPhoto');
-  const previewIndex = previewPhoto ? dailyStories.findIndex(([id]) => id === previewPhoto) : -1;
+  const archive = byId('story-archive');
+  const storyDate = byId('story-page-date');
+  const previousStory = byId('story-previous');
+  const todayStory = byId('story-today');
+  const book = byId('story-book');
+  const storyDateFormat = new Intl.DateTimeFormat('zh-TW', {
+    year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC',
+  });
+  const linkedPhoto = pageQuery.get('storyPhoto');
+  const linkedIndex = dailyStories.findIndex(([id]) => id === linkedPhoto);
+  // Existing story links resolve to the day its pair first appeared.
+  const linkedDay = linkedIndex < 0 ? null : firstStoryDay + Math.floor(linkedIndex / storyCards.length);
+  let today;
+  let archivedDay = null;
   let displayedDay;
+  let turn;
 
-  function refreshDailyStories({dayNumber: taipeiDay, daysFree: elapsedDays, birthdaySeason}) {
-    updateBirthdayLink(birthdaySeason);
-    if (taipeiDay !== displayedDay) {
-      const daysSinceFirstStory = Math.max(0, taipeiDay - firstStoryDay);
-      const firstIndex = previewIndex >= 0 ? previewIndex : daysSinceFirstStory * storyCards.length;
+  function showStoryDay(animate = false) {
+    const day = archivedDay ?? today;
+    if (day !== displayedDay) {
+      const firstIndex = Math.max(0, day - firstStoryDay) * storyCards.length;
       for (const [offset, card] of storyCards.entries()) {
         const [id, title, description] = dailyStories[(firstIndex + offset) % dailyStories.length];
         const slide = slidesById.get(id);
@@ -1166,10 +1237,44 @@
         card.description.textContent = description;
         card.link.dataset.slide = id;
       }
-      daysFree.textContent = String(elapsedDays);
-      daysFree.closest('.memorial-counter').hidden = false;
-      displayedDay = taipeiDay;
+      displayedDay = day;
+      turn?.cancel();
+      if (animate && !matchMedia('(prefers-reduced-motion: reduce)').matches && book.animate) {
+        turn = book.animate([
+          { transform: 'perspective(1100px) rotateY(-10deg) translateX(-.45rem)', opacity: .56 },
+          { transform: 'perspective(1100px) rotateY(0) translateX(0)', opacity: 1 },
+        ], { duration: 410, easing: 'cubic-bezier(.2,.65,.25,1)' });
+      }
     }
+    const label = `${archivedDay === null ? '今天' : '回看'} · ${storyDateFormat.format(day * memorialCalendar.dayMs)}`;
+    if (storyDate.textContent !== label) storyDate.textContent = label;
+    previousStory.disabled = day <= firstStoryDay;
+    todayStory.hidden = archivedDay === null;
+  }
+
+  previousStory.addEventListener('click', () => {
+    const day = (archivedDay ?? today) - 1;
+    if (day < firstStoryDay) return;
+    archivedDay = day;
+    showStoryDay(true);
+    if (previousStory.disabled && document.activeElement === previousStory) todayStory.focus();
+  });
+  todayStory.addEventListener('click', () => {
+    const keyboardFocus = document.activeElement === todayStory;
+    archivedDay = null;
+    showStoryDay(true);
+    if (keyboardFocus) previousStory.focus();
+  });
+
+  function refreshDailyStories({dayNumber: taipeiDay, daysFree: elapsedDays, birthdaySeason}) {
+    updateBirthdayLink(birthdaySeason);
+    if (today === undefined && linkedDay !== null && linkedDay < taipeiDay) archivedDay = linkedDay;
+    today = taipeiDay;
+    // The counter always reads the real calendar, including while reading an older page.
+    daysFree.textContent = String(elapsedDays);
+    daysFree.closest('.memorial-counter').hidden = false;
+    archive.hidden = false;
+    showStoryDay();
   }
   memorialCalendar.watch(refreshDailyStories);
 
@@ -1282,6 +1387,6 @@
     }
   });
 </script>
-<script type="module" src="assets/rest-scene/story-animations.js?v=6"></script>
+<script type="module" src="assets/rest-scene/story-animations.js?v=7"></script>
 </body>
 </html>
