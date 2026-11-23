@@ -427,21 +427,28 @@
   .lotus-control { position: relative; }
   .lotus-pop {
     position: absolute;
-    bottom: 55%;
+    bottom: calc(100% - .25rem);
     left: 50%;
-    font-size: 1.55rem;
-    line-height: 1;
+    z-index: 1;
+    display: block;
+    width: clamp(4.8rem, 18vw, 6.5rem);
+    height: auto;
+    color: color-mix(in srgb, var(--accent) 70%, #b37586);
     pointer-events: none;
-    animation: lotus-pop .9s ease-out both;
+    animation: lotus-fade 2.35s ease-out both;
   }
-  @keyframes lotus-pop {
-    0% { opacity: 0; transform: translate(-50%, .4rem) scale(.5); }
-    32% { opacity: 1; transform: translate(-50%, -1.4rem) scale(1.15); }
-    68% { opacity: .9; }
-    100% { opacity: 0; transform: translate(-50%, -3rem) scale(.85); }
+  .lotus-pop path {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: lotus-stroke .68s ease-out forwards;
+  }
+  @keyframes lotus-stroke { to { stroke-dashoffset: 0; } }
+  @keyframes lotus-fade {
+    0%, 68% { opacity: 1; transform: translate(-50%, 0); }
+    100% { opacity: 0; transform: translate(-50%, -.65rem); }
   }
   @media (prefers-reduced-motion: reduce) {
-    .lotus-pop { animation: none; }
+    .lotus-pop { animation: none; display: none; }
   }
 
   .photo-frame {
@@ -1371,13 +1378,7 @@
     } finally {
       lotus.disabled = false;
     }
-    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const blossom = document.createElement('span');
-    blossom.className = 'lotus-pop';
-    blossom.setAttribute('aria-hidden', 'true');
-    blossom.textContent = '🪷';
-    blossom.addEventListener('animationend', () => blossom.remove(), { once: true });
-    lotus.after(blossom);
+    lotus.dispatchEvent(new Event('lotus-offered'));
   });
   refreshLotus();
   document.addEventListener('visibilitychange', () => {
@@ -1388,5 +1389,6 @@
   });
 </script>
 <script type="module" src="assets/rest-scene/story-animations.js?v=7"></script>
+<script type="module" src="assets/rest-scene/lotus-bloom.js"></script>
 </body>
 </html>
