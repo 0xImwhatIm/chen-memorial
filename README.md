@@ -27,6 +27,14 @@
 - 在 repo 根目錄執行 `python3 -m http.server 8000`，開啟本機的 `http://localhost:8000/` 預覽。
 - GitHub Pages 從 `main` 分支根目錄發布。更新照片說明或行程後，確認部署成功並檢查兩個公開入口。Google Drive 檔名及說明的變更需要同步到網站內容後才會顯示。
 
+## 更新紀錄
+
+### 2026-11-23｜紙蓮花線條動畫
+
+- 成功送出後，按鈕上方依序畫出七瓣蓮花，停留片刻再淡出。啟用「減少動態效果」時保留送出提示。
+- 以本機模擬資料驗證成功、失敗、連續送出計數與淡出後的清除。
+- [動畫實作提交](https://github.com/0xImwhatIm/chen-memorial/commit/441a317addc2e2fefede152730bebede1c9307b3)
+
 ## 來源
 
 - 版型參考 [HTML5 UP Story](https://html5up.net/story)
