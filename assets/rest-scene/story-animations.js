@@ -1,4 +1,4 @@
-import { mountTatamiStory } from './tatami-story.js';
+import { mountTatamiStory } from './tatami-story.js?v=2';
 import { mountVeniceStory } from './venice-story.js';
 import { mountFlowerStory } from './flower-story.js';
 import { brushDuringWalk, drawWindowScene, duration as windowDuration } from './scene.js?v=5';

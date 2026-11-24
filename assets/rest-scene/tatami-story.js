@@ -2,7 +2,7 @@ import { el } from './vendor/ink.js';
 
 export function mountTatamiStory(link) {
   const figure = document.createElement('figure');
-  figure.className = 'rest-scene tatami-story';
+  figure.className = 'rest-scene tatami-story tatami-playing';
   const svg = el('svg', {
     viewBox: '0 0 320 152',
     role: 'group',
@@ -41,26 +41,28 @@ export function mountTatamiStory(link) {
         </g>
       </g>
 
-      <g class="tatami-girl figure-hit" role="button" tabindex="0" aria-label="點小玲，讓她手上的玩具車往前跑">
+      <g class="tatami-girl figure-hit" role="button" tabindex="0" aria-label="點小玲，讓玩具車滑向媽媽">
         <rect class="tatami-hit" x="192" y="59" width="103" height="68" rx="13"/>
         <path class="tatami-paper" d="M220 94Q229 79 246 82Q268 83 278 98L294 109Q299 116 289 120L263 118L230 122L218 116Z"/>
         <path class="tatami-hair" d="M201 85Q195 69 210 63Q224 57 235 66Q247 76 238 91L226 101L207 98Z"/>
         <path class="tatami-paper" d="M204 88Q214 90 223 82Q231 83 235 89Q232 102 223 105Q210 105 204 96Z"/>
         <path d="M209 95q3 2 6 0 M216 101q2 1 4-1"/>
-        <path class="tatami-paper" d="M235 98Q230 103 226 109L211 114Q205 115 205 119Q207 123 217 121L233 118Q242 114 246 106"/>
+        <path class="tatami-paper tatami-hand" d="M235 98Q230 103 226 109L211 114Q205 115 205 119Q207 123 217 121L233 118Q242 114 246 106"/>
         <path d="M274 103q-1 7 6 10"/>
       </g>
 
       <g class="tatami-car" aria-hidden="true">
+       <g transform="translate(425 0) scale(-1 1)">
         <path class="tatami-yellow" d="M197 124l3-5 5-2h10l5 5 6 2q3 1 3 4v3h-33v-4Z"/>
         <path d="M206 119h8l3 4h-13Z"/>
         <circle class="tatami-hair" cx="202" cy="131" r="3.3"/>
         <circle class="tatami-hair" cx="223" cy="131" r="3.3"/>
+       </g>
       </g>
     </g>`;
   const hint = document.createElement('figcaption');
   hint.className = 'rest-scene-hint';
-  hint.textContent = '點哥哥看他睜大眼睛，點小玲讓玩具車往前跑。';
+  hint.textContent = '點哥哥看他睜大眼睛，點小玲讓玩具車滑向媽媽。';
   figure.append(hint);
   link.after(figure);
 
@@ -69,7 +71,6 @@ export function mountTatamiStory(link) {
   const car = svg.querySelector('.tatami-car');
   let eyesTimer;
   let drive;
-  let parked = false;
 
   function interact(target, callback) {
     target.addEventListener('click', callback);
@@ -85,20 +86,19 @@ export function mountTatamiStory(link) {
     eyesTimer = setTimeout(() => brother.classList.remove('tatami-surprised'), 1700);
   });
   interact(girl, () => {
+    const wasPlaying = figure.classList.contains('tatami-playing');
+    const releasePosition = wasPlaying ? getComputedStyle(car).transform : 'none';
     drive?.cancel();
-    const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reducedMotion || !car.animate) {
-      parked = !parked;
-      car.style.transform = parked ? 'translateX(52px)' : '';
+    figure.classList.remove('tatami-playing');
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches || !car.animate) {
+      car.style.transform = 'translate(-69px, -3px)';
       return;
     }
-    parked = false;
     car.style.transform = '';
     drive = car.animate([
-      { transform: 'translateX(0)' },
-      { transform: 'translate(24px, 1px)', offset: .53 },
-      { transform: 'translate(57px, 3px)' },
-    ], { duration: 2750, easing: 'cubic-bezier(.28,.08,.48,1)', fill: 'forwards' });
+      { transform: releasePosition },
+      { transform: 'translate(-69px, -3px)' },
+    ], { duration: 2800, easing: 'cubic-bezier(.17,.56,.39,1)', fill: 'forwards' });
   });
 
   return () => {

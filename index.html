@@ -350,6 +350,13 @@
       50% { transform: rotate(1.25deg); }
     }
   }
+  @media (prefers-reduced-motion: no-preference) {
+    .tatami-playing :is(.tatami-car, .tatami-hand) { animation: tatami-push 2.8s ease-in-out infinite; }
+    @keyframes tatami-push {
+      0%, 100% { transform: translateX(1px); }
+      50% { transform: translateX(-4px); }
+    }
+  }
   .venice-story { width: 100%; }
   :root .venice-story {
     --venice-ink: #564b40; --venice-stone: #e5d6c0; --venice-house-a: #e7dfcf;
@@ -1407,7 +1414,7 @@
     }
   });
 </script>
-<script type="module" src="assets/rest-scene/story-animations.js?v=8"></script>
+<script type="module" src="assets/rest-scene/story-animations.js?v=9"></script>
 <script type="module" src="assets/rest-scene/lotus-bloom.js"></script>
 </body>
 </html>
