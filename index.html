@@ -318,19 +318,38 @@
     color: var(--muted);
   }
   .story-archive p { margin: 0; }
-  .story-archive-actions { display: flex; flex-wrap: wrap; gap: .25rem .8rem; }
-  .story-archive button {
-    min-height: 44px;
-    padding: .3rem .25rem;
-    border: 0;
-    background: none;
-    color: var(--accent);
-    font: inherit;
-    text-decoration: underline;
-    text-underline-offset: .22em;
-    cursor: pointer;
+  .story-archive-actions {
+    display: grid;
+    grid-template-columns: repeat(2, 44px);
+    align-items: center;
   }
-  .story-archive button:disabled { opacity: .55; text-decoration: none; cursor: default; }
+  .story-archive button {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .story-archive button:disabled { opacity: .32; cursor: default; }
+  .story-archive button:hover:enabled { color: var(--ink); }
+  .story-archive svg {
+    width: 23px;
+    height: 23px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.35;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    #story-today:not([hidden]) svg { animation: story-ink-appear .5s ease-out; }
+    @keyframes story-ink-appear { from { opacity: 0; } to { opacity: 1; } }
+  }
   .tatami-story { --tatami-mat: #c5a16e; --tatami-knit: #718775; --tatami-gold: #d7a04b; }
   .tatami-mat { fill: color-mix(in srgb, var(--bg) 80%, var(--tatami-mat)); }
   .tatami-knit { fill: color-mix(in srgb, var(--bg) 52%, var(--tatami-knit)); }
@@ -590,8 +609,21 @@
       <nav class="story-archive" aria-label="回看每日故事" id="story-archive" hidden>
         <p aria-live="polite" id="story-page-date"></p>
         <div class="story-archive-actions">
-          <button type="button" id="story-previous" aria-controls="story-book">回看前一天</button>
-          <button type="button" id="story-today" aria-controls="story-book" hidden>回到今天</button>
+          <button type="button" id="story-previous" aria-controls="story-book" aria-label="回看前一天" title="回看前一天">
+            <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+              <g transform="rotate(-23 16 16) translate(32 0) scale(-1 1)">
+                <path d="M2.5 13.8 28.4 5.5 22 26l-7.4-6.9-4.7 3.8.6-7.2Z"/>
+                <path d="m10.5 15.7 17.9-10.2-13.8 13.6"/>
+              </g>
+            </svg>
+          </button>
+          <button type="button" id="story-today" aria-controls="story-book" aria-label="回到今天" title="回到今天" hidden>
+            <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+              <path d="M10.4 18.1C13 10.8 20.4 5 27.1 4.6c-.3 7.3-6.2 14.9-13.7 17.5Z"/>
+              <path d="M12.5 13.8c-3.5-.2-6.4 1.3-8 4.6l6.2.2m7.6 1.2c.4 3.5-1.3 6.8-4.5 8.2l-.4-5.9M9.4 22.2c-2.3.7-3.8 2.3-4.4 4.9 2.3-.6 4-1.6 5.2-3.5"/>
+              <circle cx="21.1" cy="10.9" r="2"/>
+            </svg>
+          </button>
         </div>
       </nav>
       <div class="story-book" id="story-book">
@@ -1254,9 +1286,9 @@
   let today;
   let archivedDay = null;
   let displayedDay;
-  let turn;
+  let turning = false;
 
-  function showStoryDay(animate = false) {
+  function showStoryDay() {
     const day = archivedDay ?? today;
     if (day !== displayedDay) {
       const firstIndex = Math.max(0, day - firstStoryDay) * storyCards.length;
@@ -1271,33 +1303,64 @@
         card.link.dataset.slide = id;
       }
       displayedDay = day;
-      turn?.cancel();
-      if (animate && !matchMedia('(prefers-reduced-motion: reduce)').matches && book.animate) {
-        turn = book.animate([
-          { transform: 'perspective(1100px) rotateY(-10deg) translateX(-.45rem)', opacity: .56 },
-          { transform: 'perspective(1100px) rotateY(0) translateX(0)', opacity: 1 },
-        ], { duration: 410, easing: 'cubic-bezier(.2,.65,.25,1)' });
-      }
     }
     const label = `${archivedDay === null ? '今天' : '回看'} · ${storyDateFormat.format(day * memorialCalendar.dayMs)}`;
     if (storyDate.textContent !== label) storyDate.textContent = label;
-    previousStory.disabled = day <= firstStoryDay;
-    todayStory.hidden = archivedDay === null;
+    if (!turning) {
+      previousStory.disabled = day <= firstStoryDay;
+      todayStory.hidden = archivedDay === null;
+    }
   }
 
-  previousStory.addEventListener('click', () => {
-    const day = (archivedDay ?? today) - 1;
-    if (day < firstStoryDay) return;
-    archivedDay = day;
-    showStoryDay(true);
-    if (previousStory.disabled && document.activeElement === previousStory) todayStory.focus();
-  });
-  todayStory.addEventListener('click', () => {
-    const keyboardFocus = document.activeElement === todayStory;
-    archivedDay = null;
-    showStoryDay(true);
-    if (keyboardFocus) previousStory.focus();
-  });
+  async function turnStoryPage(button) {
+    const back = button === previousStory;
+    const target = back ? (archivedDay ?? today) - 1 : null;
+    if (turning || button.disabled || button.hidden || (back && target < firstStoryDay)) return;
+    turning = true;
+    const motion = book.animate && !matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const effects = [];
+    async function play(element, frames, duration) {
+      const effect = element.animate(frames, {
+        duration, easing: 'cubic-bezier(.42,0,.28,1)', fill: 'forwards',
+      });
+      effects.push(effect);
+      await effect.finished;
+    }
+    try {
+      if (motion) {
+        const flight = back
+          ? ['none', 'translate(-7px,-1px) rotate(3deg)', 'translate(-34px,-4px) rotate(7deg)']
+          : ['none', 'translate(4px,-5px)', 'translate(17px,-28px) rotate(5deg)'];
+        await play(button.querySelector('svg'), [
+          { transform: flight[0], opacity: 1 },
+          { transform: flight[1], opacity: .92, offset: .43 },
+          { transform: flight[2], opacity: 0 },
+        ], 760);
+        await play(book, [
+          { transform: 'none', opacity: 1 },
+          { transform: 'perspective(1400px) rotateY(' + (back ? 3 : -3) + 'deg)', opacity: 0 },
+        ], 440);
+      }
+      archivedDay = target;
+      showStoryDay();
+      if (motion) {
+        await play(book, [
+          { transform: 'perspective(1400px) rotateY(' + (back ? -4 : 4) + 'deg)', opacity: 0 },
+          { transform: 'none', opacity: 1 },
+        ], 840);
+      }
+    } finally {
+      for (const effect of effects) effect.cancel();
+      const transferFocus = document.activeElement === button;
+      turning = false;
+      showStoryDay();
+      if (transferFocus && (button.hidden || button.disabled)) {
+        (back ? todayStory : previousStory).focus({ preventScroll: true });
+      }
+    }
+  }
+  previousStory.addEventListener('click', () => turnStoryPage(previousStory));
+  todayStory.addEventListener('click', () => turnStoryPage(todayStory));
 
   function refreshDailyStories({dayNumber: taipeiDay, daysFree: elapsedDays, birthdaySeason}) {
     updateBirthdayLink(birthdaySeason);
