@@ -1,3 +1,4 @@
+import { mountTatamiStory } from './tatami-story.js';
 import { mountVeniceStory } from './venice-story.js';
 import { mountFlowerStory } from './flower-story.js';
 import { brushDuringWalk, drawWindowScene, duration as windowDuration } from './scene.js?v=5';
@@ -136,6 +137,10 @@ export function bindStoryAnimation(link) {
     if (photoId === currentId) return;
     unmount?.();
     currentId = photoId;
+    if (photoId === '1981-e1e45c6ca0ee-4') {
+      unmount = mountTatamiStory(link);
+      return;
+    }
     if (photoId === '1993-87562d34659e-1') {
       unmount = mountVeniceStory(link);
       return;

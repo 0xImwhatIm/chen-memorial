@@ -331,6 +331,25 @@
     cursor: pointer;
   }
   .story-archive button:disabled { opacity: .55; text-decoration: none; cursor: default; }
+  .tatami-story { --tatami-mat: #c5a16e; --tatami-knit: #718775; --tatami-gold: #d7a04b; }
+  .tatami-mat { fill: color-mix(in srgb, var(--bg) 80%, var(--tatami-mat)); }
+  .tatami-knit { fill: color-mix(in srgb, var(--bg) 52%, var(--tatami-knit)); }
+  .tatami-yellow, .tatami-wide-eyes ellipse { fill: color-mix(in srgb, var(--bg) 34%, var(--tatami-gold)); }
+  .tatami-paper { fill: var(--scene-paper); }
+  .tatami-hair { fill: var(--hair); }
+  .tatami-hit { fill: transparent; stroke: none; }
+  .tatami-story .figure-hit:focus-visible .tatami-hit { stroke: currentColor; stroke-dasharray: 3 2; }
+  .tatami-car { pointer-events: none; }
+  .tatami-wide-eyes { visibility: hidden; }
+  .tatami-surprised .tatami-wide-eyes { visibility: visible; }
+  .tatami-surprised .tatami-smile-eyes { visibility: hidden; }
+  @media (prefers-reduced-motion: no-preference) {
+    .tatami-rock { transform-origin: 59px 109px; animation: tatami-rock 4.2s ease-in-out infinite; }
+    @keyframes tatami-rock {
+      0%, 100% { transform: rotate(-1.25deg); }
+      50% { transform: rotate(1.25deg); }
+    }
+  }
   .venice-story { width: 100%; }
   :root .venice-story {
     --venice-ink: #564b40; --venice-stone: #e5d6c0; --venice-house-a: #e7dfcf;
@@ -1135,7 +1154,7 @@
     ["1988-dff7efcad862-1", "大新街的家族合照", "一家人在大新街排開，有人站著，有人在前排稍稍蹲低。這張照片把大大小小的身影留在了一起。"],
     ["1993-87562d34659e-1", "旅途中的一座橋", "遠處的尖塔和近處的白欄杆框住了街景。媽媽站在橋上，留下旅途中一張帶著陽光的照片。"],
     ["1976-2", "海邊的腳印", "媽媽站在沙灘上，海面在背後拉成一條長線。遠處還有幾個人，同一片沙灘也留下了他們的身影。"],
-    ["1981-e1e45c6ca0ee-4", "圍坐在桌邊", "大人和孩子挨在一起，小小的身影就在手臂之間。桌面上的暖光和家人的臉，一起留在這張相片裡。"],
+    ["1981-e1e45c6ca0ee-4", "趴在榻榻米上遊玩", "媽媽抱著弟弟，哥哥在旁邊笑咪咪，小玲趴在榻榻米上，專心玩著手裡的小車。"],
     ["1985-3", "遠山入鏡", "層層山稜在媽媽身後向遠處淡去。她站在欄杆前，和山景一起留在這張淺色的老照片裡。"],
     ["1976-3", "塔影前的小路", "媽媽站在木欄邊，樹影後面露出層疊的塔簷。老照片裡，她的淺色衣服和深色樹影格外分明。"],
     ["1982-cc90dfb344c2-6", "一家人的餐桌", "大人和孩子在桌邊排成一圈，桌上擺著盤子。相簿把這個一家人聚在一起的一餐留了下來。"],
@@ -1388,7 +1407,7 @@
     }
   });
 </script>
-<script type="module" src="assets/rest-scene/story-animations.js?v=7"></script>
+<script type="module" src="assets/rest-scene/story-animations.js?v=8"></script>
 <script type="module" src="assets/rest-scene/lotus-bloom.js"></script>
 </body>
 </html>
