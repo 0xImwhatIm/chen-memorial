@@ -1,3 +1,4 @@
+import { mountMountainStory } from './mountain-story.js';
 import { mountTatamiStory } from './tatami-story.js?v=2';
 import { mountVeniceStory } from './venice-story.js';
 import { mountFlowerStory } from './flower-story.js';
@@ -137,6 +138,10 @@ export function bindStoryAnimation(link) {
     if (photoId === currentId) return;
     unmount?.();
     currentId = photoId;
+    if (photoId === '1985-3') {
+      unmount = mountMountainStory(link);
+      return;
+    }
     if (photoId === '1981-e1e45c6ca0ee-4') {
       unmount = mountTatamiStory(link);
       return;
