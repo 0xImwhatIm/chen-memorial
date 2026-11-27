@@ -66,6 +66,16 @@
   }
   .hero { display: grid; grid-template-columns: minmax(0, 1.18fr) minmax(0, .82fr); align-items: center; gap: clamp(1.25rem, 5vw, 4rem); }
   .hero h1 { font-family: var(--heading); font-size: clamp(2.6rem, 1.5rem + 4vw, 5.15rem); letter-spacing: -.025em; font-weight: 650; }
+  .vote-reminder {
+    margin-block-end: 1.35rem;
+    padding: .7rem .9rem;
+    border-inline-start: 2px solid var(--accent);
+    background: var(--panel);
+    color: var(--ink);
+    text-align: start;
+    font: 600 1.05rem/1.6 var(--serif);
+  }
+  .vote-reminder p + p { margin-top: .2rem; color: var(--muted); font-weight: 400; }
   .hero-lead { color: var(--muted); margin-top: 1rem; max-width: 22em; }
   .actions { display: flex; flex-wrap: wrap; align-items: start; gap: .55rem; }
   .hero .actions { margin-top: 1.25rem; }
@@ -592,6 +602,10 @@
   <main class="content page" id="start">
     <header class="hero">
       <div>
+      <aside class="vote-reminder" id="vote-reminder" aria-label="投票提醒" hidden>
+        <p>11/28，就是今天，記得出門投下你的一票。</p>
+        <p>如果是媽媽的話，也會這樣做的。</p>
+      </aside>
         <h1 id="hero-title"><span class="title-intro">始終美好的母親<span class="title-hyphen">-</span></span><span class="title-name">陳淑英</span></h1>
         <p class="hero-lead" id="hero-lead">謝謝您和我們一起想念媽媽。</p>
         <div class="actions">
@@ -1283,6 +1297,8 @@
   const linkedIndex = dailyStories.findIndex(([id]) => id === linkedPhoto);
   // Existing story links resolve to the day its pair first appeared.
   const linkedDay = linkedIndex < 0 ? null : firstStoryDay + Math.floor(linkedIndex / storyCards.length);
+  const voteReminder = byId('vote-reminder');
+  const electionDay = Date.UTC(2026, 10, 28) / memorialCalendar.dayMs;
   let today;
   let archivedDay = null;
   let displayedDay;
@@ -1366,6 +1382,7 @@
     updateBirthdayLink(birthdaySeason);
     if (today === undefined && linkedDay !== null && linkedDay < taipeiDay) archivedDay = linkedDay;
     today = taipeiDay;
+    voteReminder.hidden = taipeiDay !== electionDay;
     // The counter always reads the real calendar, including while reading an older page.
     daysFree.textContent = String(elapsedDays);
     daysFree.closest('.memorial-counter').hidden = false;
@@ -1477,7 +1494,7 @@
     }
   });
 </script>
-<script type="module" src="assets/rest-scene/story-animations.js?v=11"></script>
+<script type="module" src="assets/rest-scene/story-animations.js?v=12"></script>
 <script type="module" src="assets/rest-scene/lotus-bloom.js"></script>
 </body>
 </html>
