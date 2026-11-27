@@ -67,15 +67,18 @@
   .hero { display: grid; grid-template-columns: minmax(0, 1.18fr) minmax(0, .82fr); align-items: center; gap: clamp(1.25rem, 5vw, 4rem); }
   .hero h1 { font-family: var(--heading); font-size: clamp(2.6rem, 1.5rem + 4vw, 5.15rem); letter-spacing: -.025em; font-weight: 650; }
   .vote-reminder {
-    margin-block-end: 1.35rem;
-    padding: .7rem .9rem;
-    border-inline-start: 2px solid var(--accent);
-    background: var(--panel);
+    margin-block-end: clamp(1.75rem, 5vw, 2.6rem);
     color: var(--ink);
-    text-align: start;
+    text-align: center;
     font: 600 1.05rem/1.6 var(--serif);
   }
   .vote-reminder p + p { margin-top: .2rem; color: var(--muted); font-weight: 400; }
+  .vote-notice-scan {
+    display: block;
+    width: min(100%, 24rem);
+    margin: .95rem auto 0;
+  }
+  .vote-notice-scan img { height: auto; }
   .hero-lead { color: var(--muted); margin-top: 1rem; max-width: 22em; }
   .actions { display: flex; flex-wrap: wrap; align-items: start; gap: .55rem; }
   .hero .actions { margin-top: 1.25rem; }
@@ -463,6 +466,11 @@
     stroke: #894f3d; stroke-width: 1; stroke-dasharray: 2 2;
   }
   .rest-scene-hint { font-size: .8rem; }
+  .feeding-story .reaction-target { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+  .feeding-story .reaction-focus { visibility: hidden; }
+  .feeding-story .reaction-target:focus:not(:focus-visible) { outline: none; }
+  .feeding-story .reaction-target:focus-visible .reaction-focus { visibility: visible; stroke: var(--ink); }
+  .feeding-story .rest-scene-hint { display: block; }
   .rest-scene button {
     background: none;
     border: 0;
@@ -531,7 +539,7 @@
   @media (min-width: 47rem) {
     .photo-caption { min-block-size: calc(2.9em + 1.04rem); }
   }
-  .photo-frame img, .chapter > img, .cover img, .photo-viewer img {
+  .photo-frame img, .chapter > img, .cover img, .photo-viewer img, .vote-notice-scan {
     filter: drop-shadow(0 3px 3px rgb(43 29 21 / 15%))
             drop-shadow(0 10px 10px rgb(43 29 21 / 17%));
   }
@@ -605,6 +613,13 @@
       <aside class="vote-reminder" id="vote-reminder" aria-label="投票提醒" hidden>
         <p>11/28，就是今天，記得出門投下你的一票。</p>
         <p>如果是媽媽的話，也會這樣做的。</p>
+        <div id="vote-notice-image"></div>
+        <template id="vote-notice-template">
+          <a class="vote-notice-scan" href="assets/notices/2026-11-28-vote-notice.webp" target="_blank" rel="noopener"
+             aria-label="在新分頁放大投票通知單">
+            <img src="assets/notices/2026-11-28-vote-notice.webp" width="1600" height="922" alt="臺北市選舉委員會投票通知單，個人資料已遮蔽">
+          </a>
+        </template>
       </aside>
         <h1 id="hero-title"><span class="title-intro">始終美好的母親<span class="title-hyphen">-</span></span><span class="title-name">陳淑英</span></h1>
         <p class="hero-lead" id="hero-lead">謝謝您和我們一起想念媽媽。</p>
@@ -1023,7 +1038,7 @@
   });
   if (!state.soundOff) {
     document.addEventListener('click', event => {
-      if (!event.isTrusted || event.target.closest('#sound-toggle, #soundtrack')) return;
+      if (!event.isTrusted || event.target.closest('#sound-toggle, #soundtrack, .feeding-story')) return;
       if (!state.soundOff && soundtrack.paused) startSoundtrack();
     }, { signal: firstInteraction.signal });
     startSoundtrack();
@@ -1298,6 +1313,8 @@
   // Existing story links resolve to the day its pair first appeared.
   const linkedDay = linkedIndex < 0 ? null : firstStoryDay + Math.floor(linkedIndex / storyCards.length);
   const voteReminder = byId('vote-reminder');
+  const noticeImage = byId('vote-notice-image');
+  const noticeTemplate = byId('vote-notice-template');
   const electionDay = Date.UTC(2026, 10, 28) / memorialCalendar.dayMs;
   let today;
   let archivedDay = null;
@@ -1382,7 +1399,13 @@
     updateBirthdayLink(birthdaySeason);
     if (today === undefined && linkedDay !== null && linkedDay < taipeiDay) archivedDay = linkedDay;
     today = taipeiDay;
-    voteReminder.hidden = taipeiDay !== electionDay;
+    const isElectionDay = taipeiDay === electionDay;
+    voteReminder.hidden = !isElectionDay;
+    if (isElectionDay && !noticeImage.firstElementChild) {
+      noticeImage.append(noticeTemplate.content.cloneNode(true));
+    } else if (!isElectionDay && noticeImage.firstElementChild) {
+      noticeImage.replaceChildren();
+    }
     // The counter always reads the real calendar, including while reading an older page.
     daysFree.textContent = String(elapsedDays);
     daysFree.closest('.memorial-counter').hidden = false;
@@ -1494,7 +1517,7 @@
     }
   });
 </script>
-<script type="module" src="assets/rest-scene/story-animations.js?v=12"></script>
+<script type="module" src="assets/rest-scene/story-animations.js?v=13"></script>
 <script type="module" src="assets/rest-scene/lotus-bloom.js"></script>
 </body>
 </html>

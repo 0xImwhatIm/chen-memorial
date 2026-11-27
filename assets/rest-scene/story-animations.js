@@ -1,4 +1,4 @@
-import { mountFeedingStory } from './feeding-story.js';
+import { mountFeedingStory } from './feeding-story.js?v=2';
 import { mountNavonaStory } from './navona-story.js';
 import { mountMountainStory } from './mountain-story.js';
 import { mountTatamiStory } from './tatami-story.js?v=2';
