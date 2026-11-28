@@ -1,4 +1,4 @@
-import { mountRiversideStory } from './riverside-story.js';
+import { mountRiversideStory } from './riverside-story.js?v=2';
 import { mountFeedingStory } from './feeding-story.js?v=2';
 import { mountNavonaStory } from './navona-story.js';
 import { mountMountainStory } from './mountain-story.js';

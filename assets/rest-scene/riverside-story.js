@@ -275,7 +275,7 @@ function mountRiversideScene(stage, pause) {
     "aria-labelledby": "river-title river-description"
   }, stage);
   el("title", { id: "river-title" }, svg).textContent = "\u6A39\u852D\u4E0B\u7684\u6B04\u6746";
-  el("desc", { id: "river-description" }, svg).textContent = "\u5ABD\u5ABD\u5750\u5728\u6CB3\u5CB8\u7684\u9577\u6905\u4E0A\uFF0C\u5FAE\u98A8\u5439\u52D5\u5979\u7684\u982D\u9AEE\u3001\u88D9\u64FA\u8207\u677E\u679D\u3002\u9EDE\u677E\u6A39\u5F8C\uFF0C\u5C0F\u677E\u9F20\u62B1\u8457\u677E\u679C\u63A2\u51FA\u4F86\uFF0C\u5ABD\u5ABD\u770B\u898B\u7260\u4FBF\u5FAE\u7B11\u3002";
+  el("desc", { id: "river-description" }, svg).textContent = "\u5ABD\u5ABD\u5750\u5728\u6CB3\u5CB8\u7684\u9577\u6905\u4E0A\uFF0C\u5FAE\u98A8\u5439\u52D5\u5979\u7684\u982D\u9AEE\u3001\u88D9\u64FA\u8207\u677E\u679D\u3002\u9EDE\u677E\u6A39\u5F8C\uFF0C\u5C0F\u677E\u9F20\u62B1\u8457\u677E\u679C\u63A2\u51FA\u4F86\uFF0C\u5ABD\u5ABD\u770B\u898B\u7260\u4FBF\u5FAE\u7B11\u3002\u591C\u9593\u7684\u6CB3\u9762\u6620\u8457\u6708\u5149\u3002";
   const { defs, filter } = inkDefs(svg, "riverside");
   svg.style.removeProperty("color");
   function fill(parent, d, colour, width = 1.15) {
@@ -289,6 +289,23 @@ function mountRiversideScene(stage, pause) {
     path.setAttribute("opacity", f(opacity));
     return path;
   }
+  const moonX = 74;
+  const twilight = el("linearGradient", { id: "riverside-night-sky", x2: 0, y2: 1 }, defs);
+  el("stop", { offset: 0, "stop-color": "#242937" }, twilight);
+  el("stop", { offset: 1, "stop-color": "#3a4a55" }, twilight);
+  const halo = el("radialGradient", { id: "riverside-moon-halo" }, defs);
+  el("stop", { offset: 0, "stop-color": "#f4e4be", "stop-opacity": 0.32 }, halo);
+  el("stop", { offset: 0.42, "stop-color": "#ebdfc4", "stop-opacity": 0.14 }, halo);
+  el("stop", { offset: 1, "stop-color": "#c6d4e1", "stop-opacity": 0 }, halo);
+  const nightSky = el("g", { class: "riverside-night", "data-riverside-night-sky": "", "aria-hidden": "true" }, svg);
+  el("rect", { width: 660, height: 178, fill: "url(#riverside-night-sky)" }, nightSky);
+  el("circle", { cx: moonX, cy: 86, r: 68, fill: "url(#riverside-moon-halo)" }, nightSky);
+  el("circle", { cx: moonX, cy: 86, r: 16.5, fill: "#f5e5bf", "data-riverside-moon": "" }, nightSky);
+  el("path", {
+    d: "M67 76q-3 1-4 4q2 3 5 2q3-2 5-2q1-5-6-4Z M76 89q-2 1-2 5q4 4 8 1q1-4-6-6Z",
+    fill: "#b8a786",
+    opacity: 0.25
+  }, nightSky);
   const waterline = "M0 158Q97 168 185 156T361 153Q504 154 660 169V357H0Z";
   fill(svg, waterline, "var(--water)", 0);
   const clip = el("clipPath", { id: "river-water-clip" }, defs);
@@ -314,6 +331,32 @@ function mountRiversideScene(stage, pause) {
       }
     }
     return layer;
+  });
+  const reflection = el("g", {
+    class: "riverside-night",
+    "clip-path": "url(#river-water-clip)",
+    "data-riverside-moonlight": "",
+    "aria-hidden": "true"
+  }, svg);
+  el("ellipse", { cx: moonX, cy: 249, rx: 52, ry: 88, fill: "url(#riverside-moon-halo)", opacity: 0.62 }, reflection);
+  const reflectionRandom = seeded(781);
+  const moonLanes = Array.from({ length: 3 }, (_, lane) => {
+    const group = el("g", { "data-riverside-moon-lane": lane }, reflection);
+    for (let row = 0; row < 7; row++) {
+      const depth = (row * 3 + lane) / 20;
+      const y = 174 + depth * 153 + reflectionRandom(-2, 2);
+      const center = moonX + reflectionRandom(-10, 10) * (1 + depth * 1.8);
+      const length = reflectionRandom(7, 20) + depth * reflectionRandom(12, 38);
+      const gap = reflectionRandom(3, 7);
+      const stroke = line(
+        group,
+        `M${f(center - length * 0.55)} ${f(y)}q${f(length * 0.19)} 1.1 ${f(length * 0.53)} 0m${f(gap)} 0q${f(length * 0.13)} -.7 ${f(length * 0.31)} .15`,
+        reflectionRandom(0.85, 1.65),
+        reflectionRandom(0.34, 0.68)
+      );
+      stroke.setAttribute("stroke", row % 4 === 2 ? "#b6cfcd" : "#e9dbb5");
+    }
+    return group;
   });
   const bank = el("g", { "aria-hidden": "true" }, svg);
   fill(bank, "M0 151Q33 142 67 146Q98 133 132 138Q173 124 216 140Q257 134 289 143Q325 129 362 142Q408 139 435 147Q470 144 499 154Q556 147 590 156Q624 148 660 161V175Q566 165 503 169Q404 154 348 160Q262 151 171 162Q74 173 0 160Z", "var(--far-bank)", 0.55).setAttribute("stroke", "var(--water-line)");
@@ -469,6 +512,12 @@ function mountRiversideScene(stage, pause) {
       currentLayers.forEach((layer, depth) => {
         const x = reducedMotion ? 0 : ambient * (12.5 + depth * 7.1) % streamLength;
         layer.setAttribute("transform", `translate(${f(x)} 0)`);
+      });
+      moonLanes.forEach((lane, index) => {
+        const drift = reducedMotion ? 0 : ambient;
+        const x = 4.5 * Math.sin(drift * (1.4 + index * 0.21) + index);
+        lane.setAttribute("transform", `translate(${f(x)} 0)`);
+        lane.setAttribute("opacity", f(0.8 + 0.17 * Math.sin(drift * 1.7 + index)));
       });
       for (const { branch, x, y, angle, phase, bend } of pineCrowns) {
         const swing = running ? bend.step(wobble(ambient + phase, 0.73) * 5.6 + breeze, dt) : bend.x;
