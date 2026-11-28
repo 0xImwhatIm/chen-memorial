@@ -1,3 +1,4 @@
+import { mountRiversideStory } from './riverside-story.js';
 import { mountFeedingStory } from './feeding-story.js?v=2';
 import { mountNavonaStory } from './navona-story.js';
 import { mountMountainStory } from './mountain-story.js';
@@ -140,6 +141,10 @@ export function bindStoryAnimation(link) {
     if (photoId === currentId) return;
     unmount?.();
     currentId = photoId;
+    if (photoId === '1976-4') {
+      unmount = mountRiversideStory(link);
+      return;
+    }
     if (photoId === '1977-47993fd58e71-2') {
       unmount = mountFeedingStory(link);
       return;

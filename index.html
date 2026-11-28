@@ -454,6 +454,27 @@
   }
   .rest-scene svg { display: block; width: 100%; height: auto; }
   .rest-scene .pp { fill: var(--scene-paper); }
+  .rest-scene.riverside-story {
+    width: 100%;
+    color: var(--riverside-ink);
+    --paper: var(--scene-paper);
+    --riverside-ink: #473d37; --water: #e0e9e4; --water-line: #617d78;
+    --far-bank: #d5ded0; --stone: #ddcec0; --ground: #ebe1cc;
+    --bark: #715b54; --pine: #9fa98c; --pine-light: #c6c9a5;
+    --pine-shade: #788c76; --shrub: #a8ac8f; --rose: #d6a899;
+    --rose-light: #edc8ae; --skirt: #f2e6cf; --skin: #edc9a9;
+    --hair: #5a4444; --fur: #bb805c; --belly: #edd4ad;
+    --cone: #936749; --rail: #8a7067;
+  }
+  :root[data-theme="night"] .riverside-story {
+    --riverside-ink: #e6d9c1; --water: #354c53; --water-line: #93afaa;
+    --far-bank: #424f48; --stone: #50504a; --ground: #49483d;
+    --bark: #4e403e; --pine: #536954; --pine-light: #6e7e62;
+    --pine-shade: #435849; --shrub: #607056; --rose: #8b605c;
+    --rose-light: #b58977; --skirt: #81766b; --skin: #a57b64;
+    --hair: #493b42; --fur: #9e674d; --belly: #ad896d;
+    --cone: #815d49; --rail: #645653;
+  }
   .rest-scene :is(.figure-hit, .baby-hit) {
     cursor: pointer;
     touch-action: manipulation;
@@ -466,11 +487,11 @@
     stroke: #894f3d; stroke-width: 1; stroke-dasharray: 2 2;
   }
   .rest-scene-hint { font-size: .8rem; }
-  .feeding-story .reaction-target { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
-  .feeding-story .reaction-focus { visibility: hidden; }
-  .feeding-story .reaction-target:focus:not(:focus-visible) { outline: none; }
-  .feeding-story .reaction-target:focus-visible .reaction-focus { visibility: visible; stroke: var(--ink); }
-  .feeding-story .rest-scene-hint { display: block; }
+  :is(.feeding-story, .riverside-story) .reaction-target { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+  :is(.feeding-story, .riverside-story) .reaction-focus { visibility: hidden; }
+  :is(.feeding-story, .riverside-story) .reaction-target:focus:not(:focus-visible) { outline: none; }
+  :is(.feeding-story, .riverside-story) .reaction-target:focus-visible .reaction-focus { visibility: visible; stroke: var(--ink); }
+  :is(.feeding-story, .riverside-story) .rest-scene-hint { display: block; }
   .rest-scene button {
     background: none;
     border: 0;
@@ -1038,7 +1059,7 @@
   });
   if (!state.soundOff) {
     document.addEventListener('click', event => {
-      if (!event.isTrusted || event.target.closest('#sound-toggle, #soundtrack, .feeding-story')) return;
+      if (!event.isTrusted || event.target.closest('#sound-toggle, #soundtrack, .feeding-story, .riverside-story')) return;
       if (!state.soundOff && soundtrack.paused) startSoundtrack();
     }, { signal: firstInteraction.signal });
     startSoundtrack();
@@ -1517,7 +1538,7 @@
     }
   });
 </script>
-<script type="module" src="assets/rest-scene/story-animations.js?v=13"></script>
+<script type="module" src="assets/rest-scene/story-animations.js?v=14"></script>
 <script type="module" src="assets/rest-scene/lotus-bloom.js"></script>
 </body>
 </html>
